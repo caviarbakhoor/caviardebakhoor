@@ -1,0 +1,8248 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Tokens — CaviarBakhoor.com
+   Source of truth: docs/design-system.md. Values pulled from the actual
+   packaging, not invented. Do not add a token here without adding it there.
+   ========================================================================== */
+
+:root {
+  /* --- Colour: canvas ---------------------------------------------------- */
+  --paper: #efeeeb; /* the page. cool neutral, not warm bone */
+  --ink: #101012; /* text on paper */
+  --rule: #d6d4cf; /* hairlines, dividers, input borders */
+  /* A half-step above --paper. Consecutive light sections need to be
+     distinguishable where they overlap while stacking, without either of them
+     going dark. */
+  --paper-raised: #e7e5e0;
+
+  /* Full-bleed photography panels and the footer. NOT the page canvas. */
+  --ash: #08070a;
+
+  /* --- Colour: gold ------------------------------------------------------
+     Gold is rare now. One element per section at most, and never on a label
+     or an eyebrow — those are --ink at 60%.
+     ---------------------------------------------------------------------- */
+  --gold-deep: #8a6e38;
+
+  /* --- Colour: text ------------------------------------------------------ */
+  --bone: #efeeeb; /* text on --ash panels */
+  --smoke: rgb(16 16 18 / 0.6); /* labels, eyebrows, captions, meta */
+  /* Body prose sits a step back from headline ink so the two read as separate
+     registers. Measured: 8.79:1 on --paper and 8.37:1 on --paper-raised,
+     against 16.38:1 for full ink — a clear step down that still clears the
+     4.5:1 body threshold with room to spare. --smoke's 60% would be 4.73:1,
+     too close to the floor for running prose. */
+  --ink-prose: rgb(16 16 18 / 0.78);
+
+  /* --- Colour: per-fragrance accent -------------------------------------- */
+  /* Colour-picked from the lids in public/images/collection-tins-dark.jpg.
+     The shot is underexposed on black, so three of these are near-black and
+     read almost identically on --paper. Photo-true by decision. */
+  --noir: #0c0301; /* the black lid */
+  --ward: #1e0102; /* the burgundy lid */
+  --zafran: #0c1e15; /* the green lid — the tin is green, not saffron */
+  --amber: #b5b9bb; /* the pearl-white lid */
+
+  /* --- Type: families ---------------------------------------------------- */
+  /* Bodoni Moda — display, roman and italic. Switzer — counterpoint, UI, body. */
+  --font-bodoni-stack: var(--font-bodoni), Didot, "Bodoni MT", Georgia, serif;
+  --font-switzer-stack: var(--font-switzer), system-ui, sans-serif;
+
+  /* --- Type: scale -------------------------------------------------------
+     Identiscents display sizing: pure viewport scaling. No clamp, no min, no
+     max — the display and its two subordinate tokens are all vw units, so the
+     composition holds its proportions at every width above the mobile break.
+     ---------------------------------------------------------------------- */
+  --text-display-xl: 6.48vw;
+  /* The smaller display tier: closing blocks and secondary headlines that
+     sit under an -xl in the same section and must not compete with it. */
+  --text-display-md: 4vw;
+  --text-display-sub: 1.55vw;
+  /* Eyebrows: floor 14px so they read on a laptop, about 16px on a 16-inch
+     screen (site owner, 2026-10-24: they were 11 to 12px). */
+  --text-eyebrow: clamp(0.875rem, 0.95vw, 1.0625rem);
+  --text-fragrance: clamp(2rem, 4vw, 3.5rem);
+  --text-marquee: 1.5rem;
+  --text-body: 1rem;
+  --text-meta: 0.8125rem;
+
+  /* Counterpoint sizes stay proportional to the display they sit beside. */
+  --text-counter-xl: calc(var(--text-display-xl) * 0.55);
+  --text-counter-sm: calc(var(--text-display-xl) * 0.14);
+
+  --leading-display-xl: 1;
+  --leading-fragrance: 1.05;
+  --leading-body: 1.6;
+  --leading-meta: 1.3;
+
+  --tracking-display-xl: 0;
+  --tracking-display-sub: 0;
+  --tracking-eyebrow: 0.02em;
+  --tracking-counter-xl: -0.01em;
+  --tracking-counter-sm: 0.06em;
+  --tracking-meta: 0.08em;
+
+  /* Bodoni weight and optical size.
+     wght 700 matches the reference's display weight. opsz stays low: this
+     typeface renders its hairlines sub-pixel at high opsz and they anti-alias
+     into ghost outlines on A, K, H, E, I, M and N — the reference's letterforms
+     are solid, so a high opsz moves away from it, not toward it. Measured:
+     700/6 is solid, 700/48 and 700/96 ghost. */
+  --bodoni-wght: 700;
+  --opsz-display: 6;
+  --opsz-fragrance: 6;
+  --opsz-on-ash: 6;
+
+  /* --- Layout ------------------------------------------------------------
+     The central column is set by width, not by gutters: --content is the
+     measure and the gutter is whatever is left over. That keeps the column
+     identical across viewports instead of drifting with the margin.
+     ---------------------------------------------------------------------- */
+  --content: 100%; /* phone: edge to edge minus --container-pad */
+  /* Padding applies only while --content is a percentage. Once it becomes a
+     fixed px measure the padding goes to 0, so --content is exactly the
+     rendered width rather than the width minus its own padding. */
+  --container-pad: 24px;
+  --gutter: 24px;
+  --grid-gap: 24px;
+  --section-y: 96px;
+  --radius-pill: 9999px;
+
+  /* Fixed heights, so a section fits the viewport in one piece. */
+  --media-h: 600px; /* every image except full-bleed backgrounds */
+  --button-h: 48px;
+  --nav-width: 90%; /* the header spans 90% of the viewport at every size */
+
+  /* --- Motion ------------------------------------------------------------ */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 180ms; /* hover, focus */
+  --dur-base: 420ms; /* accordions, drawers */
+  --dur-menu: 420ms; /* the slide-in menu panel */
+  --dur-nav: 340ms; /* header hide on scroll down, return on scroll up */
+
+  /* The menu is an inset floating card, not a full-height drawer: it keeps a
+     margin from every edge and the page stays visible around it. */
+  --menu-inset: 1.5rem;
+  /* Wide enough for FOR BUSINESS on one line at the menu's largest type. */
+  --menu-width: clamp(22rem, 24vw, 28rem);
+  --dur-slow: 900ms; /* the hero only */
+}
+
+/* Mobile override: 6.48vw is 24px at 375px, unreadable as a display size.
+   The two subordinate tokens scale off the same viewport and land at ~5.8px
+   and ~3.2px, so they take readable floors here too. */
+@media (max-width: 767px) {
+  :root {
+    /* 12vw, not 13: the widest word on the page, REIMAGINED, is 7.12x the
+       font size wide, and at 13vw it overran the 327px column at 375px. */
+    --text-display-xl: 12vw;
+    --text-display-md: 9vw;
+    --text-display-sub: 0.875rem;
+    --text-eyebrow: 0.8125rem;
+  }
+}
+
+/* Content width ladder. The column is a fixed measure at each breakpoint and
+   the margin is whatever remains, so the reading width never drifts. */
+@media (min-width: 1024px) {
+  :root {
+    --content: 900px; /* 14" laptop */
+    --container-pad: 0px;
+    --section-y: 128px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --content: 1080px;
+  }
+}
+
+@media (min-width: 1728px) {
+  :root {
+    --content: 1200px;
+  }
+}
+
+/* --- Dark panel ----------------------------------------------------------
+   Full-bleed photography and the footer. Text inverts to --bone; the rule
+   colour lifts so hairlines stay visible on --ash.
+   ------------------------------------------------------------------------ */
+.on-ash {
+  background: var(--ash);
+  color: var(--bone);
+  --ink: #efeeeb;
+  --rule: rgb(239 238 235 / 0.18);
+  --smoke: rgb(239 238 235 / 0.6);
+  /* The dark rule: opsz comes back down here, or the hairlines break up. */
+  --opsz-display: var(--opsz-on-ash);
+}
+
+/* --- Mesh texture --------------------------------------------------------
+   The gold mesh disc in the box has a fine perforated grid. 3px spacing,
+   --gold-deep at 6%. Section dividers and the footer field. Never behind
+   body text.
+   ------------------------------------------------------------------------ */
+:root {
+  --mesh: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--gold-deep) 6%, transparent) 0.5px,
+    transparent 0.5px
+  );
+  --mesh-size: 3px 3px;
+}
+
+/* --- Pearl rule ----------------------------------------------------------
+   A row of caviar pearls as a section divider. One element, two repeating
+   gradients: a dark pearl per tile and a small highlight up and to the left
+   of its centre, so each reads as a sphere rather than a dot.
+   ------------------------------------------------------------------------ */
+.pearl-rule {
+  height: 14px;
+  background-image:
+    radial-gradient(circle at 5px 5px, rgb(239 238 235 / 0.35) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 7px 7px, var(--ash) 0 5.5px, transparent 6px);
+  background-size: 20px 14px;
+  /* Whole pearls only — `space` spreads the leftover width between them
+     rather than cutting the last one in half. */
+  background-repeat: space no-repeat;
+}
+
+/* --- Expose tokens to Tailwind ------------------------------------------- */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ash: var(--ash);
+  --color-rule: var(--rule);
+  --color-paper: var(--paper);
+  --color-gold-deep: var(--gold-deep);
+  --color-bone: var(--bone);
+  --color-smoke: var(--smoke);
+  --color-noir: var(--noir);
+  --color-ward: var(--ward);
+  --color-zafran: var(--zafran);
+  --color-amber: var(--amber);
+
+  --font-sans: var(--font-switzer-stack);
+  --font-serif: var(--font-bodoni-stack);
+
+  --ease-brand: var(--ease);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-switzer-stack);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Custom cursor
+   Hide the native pointer ONLY where the custom dot actually mounts: a real
+   pointing device, and no reduced-motion preference. The Cursor component
+   tests the identical query, so the two can never disagree and nobody is ever
+   left with no cursor at all. Touch, coarse pointers and reduced-motion
+   viewers keep the native one.
+   ========================================================================== */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  body {
+    cursor: none;
+  }
+  /* Anything that would show its own cursor has to be suppressed too. */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary,
+  [role="button"] {
+    cursor: none;
+  }
+}
+
+/* Bodoni's caps paint a little wider than their layout box at display sizes,
+   which pushes the document scroll width past the viewport at 375px. The glyph
+   boxes sit inside the gutter — only the ink overhangs — so contain it at the
+   root rather than clipping the headline itself, which cuts real letters. */
+html {
+  overflow-x: clip;
+}
+
+/* Visually hidden, still announced. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible focus ring: 2px --gold-deep, 2px offset. Never outline: none. */
+:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Type utilities — the scale in docs/design-system.md, one class per row
+   ========================================================================== */
+
+.type-display-xl {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-style: normal;
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display-xl);
+  letter-spacing: var(--tracking-display-xl);
+  text-transform: uppercase;
+}
+
+/* Switzer Medium caps under the display. 1.55vw.
+   Medium rather than Black: the reference's own subheads measure weight 400
+   with no tracking, and Black here competed with the Bodoni display above it.
+   docs/design-system.md still records this token as Switzer Black — worth
+   reconciling when the docs are next synced. */
+.type-display-sub {
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: var(--text-display-sub);
+  line-height: 1;
+  letter-spacing: var(--tracking-display-sub);
+  text-transform: uppercase;
+}
+
+/* Eyebrow — Switzer Regular. Never gold; --ink at 60%. */
+.type-eyebrow {
+  font-family: var(--font-switzer-stack);
+  font-weight: 400;
+  font-size: var(--text-eyebrow);
+  line-height: var(--leading-meta);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+/* Marquee — category keywords, Switzer Black caps. */
+.type-marquee {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: var(--text-marquee);
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.type-display-italic {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-style: italic;
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display-xl);
+  letter-spacing: var(--tracking-display-xl);
+}
+
+/* Counterpoint — Switzer Black against the Bodoni. 0.55x, italic. */
+.type-counter-xl {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-style: italic;
+  font-size: var(--text-counter-xl);
+  line-height: var(--leading-display-xl);
+  letter-spacing: var(--tracking-counter-xl);
+}
+
+/* Counterpoint — the small tracked-out one. 0.14x, upright, uppercase. */
+.type-counter-sm {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-style: normal;
+  font-size: var(--text-counter-sm);
+  line-height: var(--leading-meta);
+  letter-spacing: var(--tracking-counter-sm);
+  text-transform: uppercase;
+}
+
+.type-fragrance {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-fragrance);
+  font-weight: var(--bodoni-wght);
+  font-style: italic;
+  font-size: var(--text-fragrance);
+  line-height: var(--leading-fragrance);
+}
+
+.type-body {
+  font-family: var(--font-switzer-stack);
+  font-weight: 400;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--ink-prose);
+  /* 68ch is the measure, but it must never push past the viewport at 375px. */
+  max-width: min(68ch, 100%);
+}
+
+/* A keyword inside prose. Full ink and Medium — enough to catch the eye
+   scanning the paragraph without turning the line into a patchwork.
+   docs/design-system.md: bold only where it carries meaning. */
+.type-body strong,
+.key {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.type-meta {
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+/* Styleguide page furniture only — not a design token. The scale has no
+   mid-tier heading, and this page still needs section titles. */
+.type-page-title {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: var(--tracking-display-xl);
+}
+
+/* The menu card fills the width on a phone, but stays inset — it is a card
+   everywhere, never a flush drawer. */
+@media (max-width: 767px) {
+  :root {
+    --menu-inset: 1rem;
+    --menu-width: calc(100vw - 2rem);
+  }
+}
+
+/* One line of a display headline set in Bodoni italic — the counterpoint the
+   reference uses for "CREATIVE / FEATURE". */
+.type-display-italic-line {
+  font-style: italic;
+}
+
+/* --- Content media ------------------------------------------------------
+   Every content image except full-bleed backgrounds. Desktop: one fixed
+   height (--media-h) with cover, so the images in a section share a height.
+   Phone and tablet: natural aspect at full width — a 600px-tall centre crop
+   of a 16:9 photo on a 375px screen showed a strip of its middle. The hero
+   is not .media; it stays cover at every size.
+   ------------------------------------------------------------------------ */
+.media {
+  display: block;
+  width: 100%;
+  height: var(--media-h);
+  object-fit: cover;
+}
+
+@media (max-width: 1023px) {
+  .media {
+    height: auto;
+  }
+}
+
+/* The section 03 portrait. Natural aspect on desktop, where it sits beside
+   the copy; on phone and tablet it stacks above the copy and is held to
+   400px — at full column width its natural height ran past 600px. */
+.media-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 1023px) {
+  .media-portrait {
+    height: 400px;
+    object-fit: cover;
+  }
+}
+
+/* --- Justified prose ------------------------------------------------------
+   Justified with hyphenation on desktop, per the brief. Left below 1024px:
+   at a 327px measure justification opens rivers between words.
+   ------------------------------------------------------------------------ */
+.prose-justified {
+  max-width: none;
+  text-align: justify;
+  hyphens: auto;
+}
+
+@media (max-width: 1023px) {
+  .prose-justified {
+    text-align: left;
+    hyphens: manual;
+  }
+}
+
+/* Section 03's "Elixir × Caviar de Parfum": right-aligned against the
+   portrait on desktop; left and a step larger on phone and tablet, where the
+   row stacks and --text-display-sub would be 12px. */
+.approach-subhead {
+  text-align: right;
+}
+
+@media (max-width: 1023px) {
+  .approach-subhead {
+    text-align: left;
+    font-size: 1.125rem;
+  }
+}
+
+/* --- Section 04: the project wheel ---------------------------------------
+   Four cards on a shared arc. The arc's centre sits far below the viewport so
+   the visible span reads as a gentle curve rather than a visible circle —
+   each card is pushed out to --radius and rotated into place, and the group's
+   rotation is animated by GSAP.
+
+   The card's own counter-rotation is applied by GSAP too, so nothing here
+   needs to know about it.
+   ------------------------------------------------------------------------ */
+.wheel-root {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* The pivot is far below the frame — the cards ride the top of a large
+     circle, so the arc between them is shallow. --wheel-radius is declared on
+     this element by ProjectWheel so JS and CSS agree on one value.
+     transform-origin is safe here: GSAP animates `transform`, not this. */
+  transform-origin: 50% calc(50% + var(--wheel-radius, 190vh));
+}
+
+.wheel-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(768px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* NO transform or transform-origin here. GSAP writes the whole `transform`
+     property, so anything set here is wiped the moment it animates — the
+     cards' arc positions are set in ProjectWheel via gsap.set instead. */
+}
+
+/* While the wheel is live the cards are promoted to their own layers, so a
+   frame is a compositor move rather than a repaint of photo and text. Only
+   at desktop and only with motion on: the list and the track need neither. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .wheel-card {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
+
+.wheel-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+/* The index stays on one line; a long label ("Ward Baccarat, The Truffle
+   Rose / Caviar Bakhoor") wraps on its own side, right-aligned. */
+.wheel-card-meta > span:first-child {
+  flex: none;
+  white-space: nowrap;
+}
+
+.wheel-card-meta > span:last-child {
+  text-align: right;
+}
+
+/* The image, lifted off the card with a soft drop shadow — the one place on
+   the page a shadow is used, and only because the reference's card has it. */
+.wheel-card-figure {
+  display: block;
+  line-height: 0;
+  box-shadow: 0 28px 56px -20px rgb(16 16 18 / 0.45);
+}
+
+.wheel-card-blurb {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-prose);
+  text-align: justify;
+  hyphens: auto;
+}
+
+.wheel-card-blurb strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+@media (max-width: 1023px) {
+  .wheel-card-blurb {
+    text-align: left;
+    hyphens: manual;
+  }
+}
+
+/* Right-aligned under the paragraph, as the reference closes its card.
+   Two classes on purpose: .cta-button sets align-self: flex-start and is
+   declared later in this file, so a single-class rule here loses on cascade
+   order — measured as right-aligned=false before this was raised. */
+.wheel-card .wheel-card-cta {
+  align-self: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* The giant word behind the wheel. Time-based, independent of scroll. */
+.wheel-marquee {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wheel-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: wheel-marquee 60s linear infinite;
+}
+
+.wheel-marquee-word {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  /* 356px at the reference's scale; capped by viewport so it never overflows
+     a laptop screen. */
+  font-size: clamp(6rem, 24vw, 356px);
+  line-height: 0.8;
+  text-transform: uppercase;
+  color: var(--ink);
+  /* Fully visible, per the brief. The front card sits over it. */
+  opacity: 1;
+}
+
+.wheel-marquee-gap {
+  display: inline-block;
+  width: 0.4em;
+}
+
+@keyframes wheel-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.wheel > * {
+  z-index: 1;
+}
+
+/* Phone and tablet: no wheel. The cards sit in one row, left-aligned at the
+   gutter, each the width of the viewport less the gutters, and vertical
+   scroll drives the row right to left 1:1 — ProjectWheel sets the row's x. */
+@media (max-width: 1023px) {
+  .wheel-root {
+    /* The row is wider than the root; it must start at the left edge, not
+       be centred by the desktop flex rules. And the root is only as tall as
+       the card: a 100svh box centred the card and left a viewport of empty
+       paper between the headline and the first card. */
+    height: auto;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  /* No giant word at these widths, per the brief. */
+  .wheel-marquee {
+    display: none;
+  }
+
+  .wheel {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    /* One gutter between cards: the next card starts exactly at the screen
+       edge, so it is out of view at rest and enters on the first scroll. */
+    gap: var(--gutter);
+    width: max-content;
+    height: auto;
+    padding-inline: var(--gutter);
+    transform-origin: 0 0;
+  }
+
+  .wheel-card {
+    position: static;
+    flex: none;
+    width: calc(100vw - 2 * var(--gutter));
+    max-width: 768px;
+  }
+
+}
+
+/* Reduced motion, at any width: no pin, no track, no arc — a vertical list. */
+@media (prefers-reduced-motion: reduce) {
+  .wheel-root {
+    height: auto;
+    overflow: visible;
+  }
+
+  .wheel {
+    height: auto;
+    width: 100%;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    /* Never closer than 96px, so each card reads as its own item. */
+    gap: max(6rem, 6vw);
+    padding-block: var(--section-y);
+    padding-inline: var(--gutter);
+  }
+
+  .wheel-card {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: 420px;
+    margin-inline: auto;
+    opacity: 1 !important;
+  }
+
+  .wheel-marquee-track {
+    animation: none;
+  }
+}
+/* --- Section 05: the ritual (fixed background) --------------------------
+   The photograph is a fixed layer; the section's clip-path clips it to the
+   section's box. Fixed descendants ignore overflow clipping but not
+   clip-path, which is what makes this work without a containing-block hack
+   (a transform on the section would re-anchor the fixed layer to it).
+   ------------------------------------------------------------------------ */
+.ritual {
+  min-height: 100svh;
+  clip-path: inset(0);
+  color: var(--paper);
+}
+
+.ritual-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.ritual-bg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The subject sits centre-left; a portrait crop keeps it. */
+  object-position: 42% 50%;
+}
+
+.ritual-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgb(8 7 10 / 0.55) 0%, transparent 32%, transparent 66%, rgb(8 7 10 / 0.6) 100%),
+    radial-gradient(ellipse at center, transparent 30%, rgb(8 7 10 / 0.5) 100%);
+}
+
+.ritual-layer {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: clamp(2.5rem, 6vh, 4rem);
+  padding: clamp(7rem, 14vh, 9rem) var(--gutter) clamp(3rem, 8vh, 5rem);
+}
+
+.ritual-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.ritual-head .type-display-sub {
+  margin: 0;
+  color: var(--paper);
+  font-size: clamp(0.875rem, 1.55vw, 1.4rem);
+}
+
+.ritual-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+.ritual-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ritual-step-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-weight: 500;
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.ritual-step-name {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.ritual-step-body {
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--font-switzer-stack);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgb(239 238 235 / 0.85);
+}
+
+.ritual-link {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+.ritual-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Tablet: two columns. */
+@media (min-width: 768px) {
+  .ritual-steps {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--gutter);
+  }
+
+  .ritual-step:nth-child(even) {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .ritual-step:nth-child(even) .ritual-link {
+    align-self: flex-end;
+  }
+}
+
+/* Desktop: one block in each corner, ~28% wide, the middle left to the
+   photograph. */
+@media (min-width: 1024px) {
+  .ritual-layer {
+    padding-inline: clamp(2rem, 6vw, 6rem);
+  }
+
+  .ritual-steps {
+    grid-template-columns: 28% 28%;
+    justify-content: space-between;
+    align-content: space-between;
+    row-gap: clamp(4rem, 14vh, 10rem);
+  }
+}
+
+/* No parallax under reduced motion: the photo scrolls with the section. */
+@media (prefers-reduced-motion: reduce) {
+  .ritual-bg {
+    position: absolute;
+  }
+}
+
+/* --- Section 06: the four -----------------------------------------------
+   The reference's people section, with the fragrances as the people. An
+   opener composition, a staggered two-column run, a marquee close.
+   ------------------------------------------------------------------------ */
+
+/* The opener: four words, three faces, on a small grid so each word has its
+   own cell and the baselines stagger by design rather than by wrapping.
+     lead    .
+     anchor  link
+     .       close                                                          */
+.four-opener {
+  margin: 0;
+  padding-block: var(--section-y) clamp(3rem, 7vw, 6rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1em;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Each line: a small word and a big one, on one baseline. */
+.four-opener-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: 0.4em;
+}
+
+/* WHERE, BECOMES: Switzer Black caps, small. */
+.four-opener-small {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: calc(var(--text-display-xl) * 0.32);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* CAVIAR: Switzer Black italic, the counterpoint face. */
+.four-opener-caviar {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-style: italic;
+  font-size: calc(var(--text-display-xl) * 0.85);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* BAKHOOR: the Bodoni display. */
+.four-opener-bakhoor {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  text-transform: uppercase;
+}
+
+/* The run. One column below 1024; two above, the right one dropped so the
+   pairs stagger as they do in the reference. */
+.four-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(3rem, 8vw, 5rem);
+}
+
+.four-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.four-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.four-title-the {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 2.6vw, 2.6rem);
+  letter-spacing: 0.01em;
+}
+
+.four-title-epithet {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-weight: var(--bodoni-wght);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-size: clamp(2.1rem, 3.2vw, 3.2rem);
+  margin-top: -0.06em;
+}
+
+.four-figure {
+  position: relative;
+  margin: 0;
+  line-height: 0;
+}
+
+.four-figure a {
+  display: block;
+}
+
+/* The fragrance name where the reference signs its portrait. */
+.four-signature {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-weight: 500;
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-size: clamp(1.25rem, 1.6vw, 1.6rem);
+  line-height: 1;
+  color: var(--paper);
+  text-shadow: 0 1px 12px rgb(8 7 10 / 0.5);
+}
+
+.four-blurb {
+  margin: 0;
+}
+
+.four-blurb strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.four-blurb em {
+  font-style: italic;
+}
+
+@media (min-width: 1024px) {
+  .four-grid {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 7%;
+    row-gap: clamp(4rem, 9vw, 8rem);
+  }
+
+  /* Left column: title ranged right to the image's edge. Right column: the
+     block dropped, title ranged left, signature moved to the foot. */
+  .four-entry:nth-child(odd) .four-title {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .four-entry:nth-child(even) {
+    padding-top: 45%;
+  }
+
+  .four-entry:nth-child(even) .four-signature {
+    top: auto;
+    right: auto;
+    bottom: 1rem;
+    left: 1.25rem;
+  }
+}
+
+/* The close: a scroll-linked line, a paragraph, a button, all centred. */
+.four-close {
+  padding-top: clamp(4rem, 9vw, 8rem);
+  padding-bottom: var(--section-y);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* Medium, not Black, and a hard cut at the column edges rather than the
+   keyword band's feathered ends — the reference's line is clipped flat.
+   Two classes: .marquee sets the mask and is declared later in this file,
+   so a single-class override lost on cascade order — measured. */
+.marquee.four-marquee {
+  /* Soft ends, like the keyword band: a hard cut at the column edges read
+     as a clipped, broken line. */
+}
+
+.four-marquee .type-marquee {
+  font-size: clamp(1.5rem, 2.8vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.four-close-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.four-close-copy {
+  margin: 0;
+  max-width: 60ch;
+  text-align: center;
+}
+
+.four-close-copy strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.four-close-inner .cta-button {
+  align-self: center;
+}
+
+/* --- Section 08: credentials strip -----------------------------------------
+   A fixed label cell and a self-running band, hairlines top and bottom.
+   ------------------------------------------------------------------------ */
+.credentials {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  min-height: 120px;
+  border-block: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.credentials-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1.5rem;
+  border-right: 1px solid var(--ink);
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.credentials-band {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* Hard cut at the cell edge, not the keyword band's feather. Two classes:
+   .marquee is declared later in this file and sets the mask. */
+.marquee.credentials-marquee {
+  width: 100%;
+  mask-image: none;
+}
+
+.credentials-run {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* ~80px between items: 40px either side. */
+.credentials-item {
+  display: flex;
+  align-items: center;
+  padding-inline: 40px;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1.1rem;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* A brand mark, when the client has confirmed one. */
+.credentials-item img {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+@media (max-width: 767px) {
+  .credentials {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .credentials-label {
+    padding-block: 0.875rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .credentials-band {
+    min-height: 72px;
+  }
+
+  .credentials-item {
+    padding-inline: 24px;
+    font-size: 0.9375rem;
+  }
+}
+
+/* --- Section 09: footer ---------------------------------------------------
+   Headline and nav, a paragraph, the legal line, then the clipped wordmark.
+   ------------------------------------------------------------------------ */
+.footer {
+  position: relative;
+  overflow: hidden;
+  padding-top: clamp(4rem, 8vw, 6rem);
+  background-color: var(--ash);
+  background-image: var(--mesh);
+  background-size: var(--mesh-size);
+  color: var(--ink);
+  /* .on-ash flips --ink and --smoke; the paragraph's tone needs the same. */
+  --ink-prose: rgb(239 238 235 / 0.75);
+}
+
+/* The header's width, not the content column's. */
+.footer-inner {
+  width: var(--nav-width);
+  margin-inline: auto;
+}
+
+.footer-top {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.footer-headline {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  /* The reference's headline measures ~26px at 1920: a title, not a display. */
+  font-size: clamp(1.25rem, 1.45vw, 1.75rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.footer-headline em {
+  font-style: italic;
+}
+
+.footer-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  /* ~90px between items at 1920. */
+  gap: 1rem clamp(1.5rem, 3.6vw, 4.5rem);
+}
+
+.footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.footer-arrow {
+  display: inline-block;
+  transition: transform var(--dur) var(--ease);
+}
+
+.footer-nav a:hover .footer-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Paragraph left, legal links small at the right, on one row. */
+.footer-body {
+  margin-top: clamp(3rem, 6.5vw, 6.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.footer-copy {
+  margin: 0;
+  max-width: 42%;
+  color: var(--ink-prose);
+}
+
+.footer-copy strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.footer-copy em {
+  font-style: italic;
+}
+
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.footer-legal ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-legal a,
+.footer-legal p {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  text-decoration: none;
+}
+
+/* The wordmark: sized so the two words span the viewport, fully visible,
+   the letters sitting on the page's bottom edge — the reference ends on the
+   whole word, not a crop. Semibold, as the reference's wordmark is; Black
+   at this size read as a slab. */
+.footer-wordmark {
+  margin-top: clamp(2.5rem, 5vw, 5rem);
+  padding-left: 0.02em;
+  /* A few pixels of paper under the letters, as the reference has. */
+  padding-bottom: 0.04em;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  /* 14.6vw: measured, the two words in Semibold then span 98% of the
+     viewport at every width. */
+  font-size: 14.6vw;
+  line-height: 0.74;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--ink);
+  user-select: none;
+}
+
+/* One span per letter so each can rise on its own; see FooterWordmark. */
+.footer-letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Caviar pearls scattered from the pointer over the wordmark. Each is a dark
+   sphere with a soft highlight, like the macro shot. */
+.footer-pearls {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.footer-pearl {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 34% 30%,
+    rgb(255 244 225 / 0.9) 0 9%,
+    #7a5232 22%,
+    #3a2414 55%,
+    #120a05 100%
+  );
+  box-shadow: 0 0 0 1px rgb(239 238 235 / 0.08);
+  will-change: transform, opacity;
+}
+
+@media (min-width: 1024px) {
+  .footer-top {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .footer-body {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .footer-legal {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 1023px) {
+  .footer-copy {
+    max-width: none;
+  }
+}
+
+/* --- /collection: hero --------------------------------------------------
+   Half a viewport, the tins full-bleed behind a scrim, copy at the foot.
+   ------------------------------------------------------------------------ */
+.chero {
+  position: relative;
+  min-height: 50svh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.chero-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  padding-top: clamp(7rem, 16vh, 10rem);
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.chero-body .type-display-xl {
+  /* A page opener at 60% of the home display, not the page itself. */
+  font-size: calc(var(--text-display-xl) * 0.6);
+}
+
+/* The reference's "ZEUS | PHARAON": a row of the names, jumping to cards. */
+.chero-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: clamp(0.75rem, 1.5vw, 1.25rem);
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chero-jump a {
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.chero-jump a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.chero-jump-sep {
+  margin-inline: 0.75rem;
+  color: var(--smoke);
+}
+
+/* --- /collection: catalogue ---------------------------------------------
+   Two by two, flush: the reference's split screens, stacked.
+   ------------------------------------------------------------------------ */
+.catalogue {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--ash);
+}
+
+.pcard {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  /* Copy at the foot of the card, as the reference sets it. */
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--ash);
+  color: var(--paper);
+  /* A light hairline: the photographs are near-black and ran together. */
+  border: 1px solid rgb(239 238 235 / 0.25);
+}
+
+.pcard-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 900ms var(--ease);
+}
+
+.pcard:hover .pcard-img {
+  transform: scale(1.03);
+}
+
+.pcard-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(8 7 10 / 0.75) 0%, rgb(8 7 10 / 0.25) 40%, transparent 70%);
+}
+
+.pcard-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 0 var(--gutter) clamp(2.5rem, 6vh, 4rem);
+}
+
+/* .cta-button sets align-self: flex-start; centred here with the title. */
+.pcard-body .cta-button {
+  align-self: center;
+}
+
+.pcard-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-on-ash);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(2.25rem, 4vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+
+/* Paper button on photography; inverts to ash on hover. Two classes:
+   .cta-button is declared later in this file and won on cascade order —
+   measured as an ash button before this was raised. */
+.cta-button.cta-button--paper {
+  background: var(--paper);
+  color: var(--ash);
+  border-color: var(--paper);
+  margin-top: 0.5rem;
+}
+
+.cta-button.cta-button--paper:hover,
+.cta-button.cta-button--paper:focus-visible {
+  background: var(--ash);
+  color: var(--paper);
+}
+
+@media (min-width: 768px) {
+  .catalogue {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pcard {
+    min-height: 100svh;
+  }
+}
+
+/* --- /collection: the story ----------------------------------------------
+   Centred title and lede, then the four fragrances on a ruler.
+   ------------------------------------------------------------------------ */
+.story {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.story-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: calc(var(--text-display-xl) * 0.6);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.story-lede {
+  margin: clamp(1.5rem, 3vw, 2.5rem) auto 0;
+  max-width: 40ch;
+  text-align: center;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: clamp(1rem, 1.3vw, 1.25rem);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.story-copy {
+  margin: 1.25rem auto 0;
+  max-width: 62ch;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.story-copy .type-body {
+  max-width: none;
+}
+
+/* The ruler. Fixed row heights so the line lands at the same y in every
+   entry: thumb 140px, name 3rem, marker row 48px. The line and its ticks are
+   drawn once across the list at that height. */
+.story-line {
+  --story-line-y: calc(140px + 3rem + 24px);
+  position: relative;
+  list-style: none;
+  margin: clamp(3rem, 6vw, 5rem) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(3rem, 6vw, 4rem) var(--gutter);
+}
+
+.story-entry {
+  position: relative;
+  display: grid;
+  grid-template-rows: 140px 3rem 48px auto 1fr;
+  justify-items: center;
+  align-items: end;
+  text-align: center;
+  gap: 0;
+}
+
+.story-thumb {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 140px;
+}
+
+.story-thumb img {
+  display: block;
+  height: 130px;
+  width: auto;
+}
+
+.story-name {
+  margin: 0;
+  align-self: center;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  /* One line at every width: the row above the ruler is a fixed 3rem, and
+     a wrapped IMPERIAL ZAFRAN climbed into the thumbnail. */
+  font-size: clamp(1rem, 1.45vw, 1.4rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.story-marker {
+  align-self: center;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  box-sizing: border-box;
+}
+
+.story-words {
+  margin: 0.5rem 0 0;
+  align-self: start;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.story-desc {
+  margin: 0.75rem 0 0;
+  align-self: start;
+  max-width: 34ch;
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 768px) {
+  .story-line {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .story-line {
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 0;
+  }
+
+  .story-line::before,
+  .story-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  /* The line. */
+  .story-line::before {
+    top: var(--story-line-y);
+    height: 1px;
+    background: var(--ink);
+  }
+
+  /* The ticks: a short one every 32px, a tall one every 64px. */
+  .story-line::after {
+    top: calc(var(--story-line-y) - 6px);
+    height: 12px;
+    background:
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 32px),
+      repeating-linear-gradient(to right, transparent 0 63px, var(--ink) 63px 64px);
+    background-size: 100% 6px, 100% 12px;
+    background-position: 0 3px, 0 0;
+    background-repeat: no-repeat;
+  }
+
+  .story-marker {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* --- /contact --------------------------------------------------------------
+   A centred opener, the enquiry form, contact details and legal links. The
+   form column is narrower than the content column, as the reference's is.
+   ------------------------------------------------------------------------ */
+.contact {
+  padding-top: clamp(7rem, 14vh, 9rem);
+  padding-bottom: var(--section-y);
+}
+
+.contact-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.contact-headline {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.9rem, 3.6vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.contact-copy {
+  margin: 0;
+  max-width: 58ch;
+}
+
+.contact-copy em {
+  font-style: italic;
+}
+
+/* The form column: ~500px, centred. */
+.contact-form {
+  width: min(100%, 31.5rem);
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+}
+
+.enquiry {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+.enquiry-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem 2rem;
+}
+
+.enquiry-field input,
+.enquiry-field textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--button-h);
+  padding: 0 1rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  outline: none;
+  transition: box-shadow 160ms var(--ease);
+}
+
+.enquiry-field textarea {
+  height: auto;
+  min-height: 7rem;
+  padding-block: 0.75rem;
+  resize: vertical;
+}
+
+.enquiry-field input::placeholder,
+.enquiry-field textarea::placeholder {
+  color: var(--ink);
+  opacity: 0.85;
+}
+
+.enquiry-field input:focus-visible,
+.enquiry-field textarea:focus-visible {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.enquiry-legend {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+.enquiry-chips,
+.enquiry-checks {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.enquiry-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* A chip is a label wrapping a hidden radio; the label carries the look
+   and the radio keeps the keyboard and screen-reader behaviour. */
+.enquiry-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 2.75rem;
+  padding-inline: 1rem;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.enquiry-chip input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.enquiry-chip:has(input:checked) {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.enquiry-chip:has(input:focus-visible) {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.enquiry-check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 3rem;
+}
+
+.enquiry-check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.enquiry-check input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.enquiry-check-box {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  box-sizing: border-box;
+  background: transparent;
+  transition: background-color 120ms var(--ease);
+}
+
+.enquiry-check:has(input:checked) .enquiry-check-box {
+  background: var(--ink);
+  box-shadow: inset 0 0 0 3px var(--paper);
+}
+
+.enquiry-check:has(input:focus-visible) .enquiry-check-box {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.enquiry-submit {
+  width: 100%;
+  height: 3.5rem;
+  border: 1px solid var(--ash);
+  border-radius: 8px;
+  background: var(--ash);
+  color: #fff;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.enquiry-submit:hover,
+.enquiry-submit:focus-visible {
+  background: var(--paper);
+  color: var(--ash);
+  outline: none;
+}
+
+.enquiry-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.enquiry-success,
+.enquiry-error {
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  text-align: center;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.contact-details {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-style: normal;
+  text-align: center;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.contact-details p {
+  margin: 0;
+}
+
+.contact-details a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.contact-confirm {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--smoke);
+}
+
+.contact-sep {
+  margin-inline: 0.75rem;
+  color: var(--smoke);
+}
+
+.contact-legal {
+  list-style: none;
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-legal a {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.contact-legal a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+@media (min-width: 640px) {
+  .enquiry-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- PDP: hero -------------------------------------------------------------
+   A pinned stage on the left walking through the images, the floating
+   panel on the right. Below 1024 the stage is a swipeable row and the panel
+   follows beneath it.
+   ------------------------------------------------------------------------ */
+.pdp-hero {
+  position: relative;
+  background: var(--paper);
+}
+
+/* The pinned wrapper carries the layout; the section is just the mount. */
+.pdp-hero-pin {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100svh;
+}
+
+.pdp-stage-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 60svh;
+}
+
+/* The rail: two arrows and a track, pinned to the left edge. */
+/* Inboard of the page's side-label rail, which sits at the gutter. */
+.pdp-rail {
+  position: absolute;
+  left: clamp(6.5rem, 11vw, 10rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pdp-rail-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.pdp-rail-btn:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.pdp-rail-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pdp-rail-track {
+  position: relative;
+  width: 2px;
+  height: 6rem;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.pdp-rail-thumb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: var(--ink);
+  transition: height 300ms var(--ease);
+}
+
+/* The stage. Pinned: slides stack and crossfade. Otherwise: a native
+   scroll-snap row. */
+.pdp-stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  gap: var(--gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-inline: calc(var(--gutter) + 3.5rem) var(--gutter);
+}
+
+.pdp-stage::-webkit-scrollbar {
+  display: none;
+}
+
+/* Phones and tablets: the gallery is a native swipe row, so the arrow rail
+   goes, and the squares take the width it was holding. */
+@media (max-width: 1023px) {
+  .pdp-rail {
+    display: none;
+  }
+
+  .pdp-stage {
+    padding-inline: var(--gutter);
+  }
+
+  .pdp-slide {
+    flex-basis: 86%;
+  }
+}
+
+.pdp-slide {
+  flex: 0 0 82%;
+  margin: 0;
+  scroll-snap-align: center;
+}
+
+/* Every product image is shown as a 1:1 square, cropped to cover, so the
+   gallery holds one shape whatever each photograph was shot at. */
+.pdp-slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  max-height: 70svh;
+  object-fit: cover;
+}
+
+.pdp-stage[data-pinned] {
+  display: block;
+  overflow: visible;
+  height: 100svh;
+  padding: 0;
+}
+
+.pdp-stage[data-pinned] .pdp-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(4rem, 10vh, 7rem) clamp(2rem, 5vw, 5rem) clamp(4rem, 10vh, 7rem) clamp(10rem, 16vw, 14rem);
+  box-sizing: border-box;
+  will-change: opacity, transform;
+}
+
+/* The square is as large as the slide allows in both directions: the
+   slide is a size container, and the image takes the smaller side. */
+.pdp-stage[data-pinned] .pdp-slide-box {
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdp-stage[data-pinned] .pdp-slide img {
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+  max-height: none;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+/* The panel and its slot. The slot is what the pin moves; the panel is the
+   card. */
+.pdp-panel-slot {
+  align-self: start;
+}
+
+.pdp-panel {
+  margin: 0 var(--gutter) var(--section-y);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+}
+
+.pdp-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.pdp-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(1.75rem, 2.4vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pdp-line {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.pdp-weight {
+  margin: 0;
+  flex-shrink: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--smoke);
+}
+
+.pdp-buy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.pdp-price {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+}
+
+.pdp-add {
+  height: var(--button-h);
+  padding-inline: 1.75rem;
+  border: 1px solid var(--ash);
+  background: var(--ash);
+  color: #fff;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.pdp-add:hover:not(:disabled),
+.pdp-add:focus-visible {
+  background: var(--paper);
+  color: var(--ash);
+  outline: none;
+}
+
+.pdp-add:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Accordions: native details, the reference's + / − at the right. */
+.pdp-acc {
+  border-bottom: 1px solid var(--rule);
+}
+
+.pdp-acc summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 1rem;
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pdp-acc summary::-webkit-details-marker {
+  display: none;
+}
+
+.pdp-acc summary::after {
+  content: "+";
+  font-weight: 400;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.pdp-acc[open] summary::after {
+  content: "−";
+}
+
+.pdp-acc-body {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-prose);
+}
+
+.pdp-notes,
+.pdp-facts {
+  margin: 0 0 1.25rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.5rem;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.875rem;
+}
+
+.pdp-notes dt,
+.pdp-facts dt {
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  padding-top: 0.15em;
+}
+
+.pdp-notes dd,
+.pdp-facts dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.pdp-list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.1rem;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-prose);
+}
+
+@media (min-width: 1024px) {
+  .pdp-hero-pin {
+    grid-template-columns: 1fr minmax(24rem, 34%);
+    align-items: center;
+  }
+
+  .pdp-stage-wrap {
+    min-height: 100svh;
+  }
+
+  /* Header clearance above, breathing room below; no inner scrollbar — a
+     tall card is scrolled by the pin (see ProductHero). */
+  .pdp-panel-slot {
+    padding: clamp(5rem, 11vh, 7rem) clamp(1.5rem, 4vw, 4rem) 2rem 0;
+  }
+
+  .pdp-panel {
+    margin: 0;
+  }
+}
+
+/* --- PDP: sticky buy bar ---------------------------------------------------- */
+.pdp-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: var(--paper);
+  border-top: 1px solid var(--ink);
+  transform: translateY(100%);
+  transition: transform 320ms var(--ease);
+}
+
+.pdp-bar[data-shown] {
+  transform: translateY(0);
+}
+
+.pdp-bar-inner {
+  width: var(--nav-width);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.75rem;
+}
+
+.pdp-bar-product {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.pdp-bar-thumb {
+  width: 72px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.pdp-bar-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pdp-bar-meta {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.pdp-bar-buy {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pdp-bar-price {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+@media (max-width: 767px) {
+  .pdp-bar-thumb,
+  .pdp-bar-meta {
+    display: none;
+  }
+
+  .pdp-bar-price {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-bar {
+    transition: none;
+  }
+}
+
+/* --- PDP: sections below the hero ----------------------------------------- */
+.pdp-notes-section {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.pdp-notes-line {
+  margin: 0 auto clamp(2rem, 5vw, 4rem);
+  max-width: 26ch;
+  text-align: center;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: calc(var(--text-display-xl) * 0.5);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pdp-details {
+  padding-block: 0 var(--section-y);
+}
+
+.pdp-details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  padding-top: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.pdp-h2 {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pdp-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.pdp-steps li {
+  display: grid;
+  grid-template-columns: 2.5rem 7rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+  color: var(--ink-prose);
+}
+
+.pdp-step-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.pdp-step-name {
+  font-weight: 900;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pdp-facts {
+  margin: 0;
+  row-gap: 0.85rem;
+}
+
+.pdp-story {
+  padding-top: 0;
+}
+
+.pdp-story-copy {
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+  max-width: 52ch;
+  text-align: center;
+  font-size: 1.125rem;
+}
+
+.pdp-squares {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gutter);
+  margin-bottom: var(--section-y);
+}
+
+.pdp-square {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.pdp-rule {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 0;
+}
+
+.pdp-reviews {
+  padding-block: var(--section-y);
+}
+
+.pdp-reviews-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pdp-reviews-count {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.875rem;
+  color: var(--smoke);
+}
+
+.pdp-review-btn {
+  display: inline-flex;
+  align-items: center;
+  height: var(--button-h);
+  padding-inline: 2rem;
+  background: var(--ash);
+  color: #fff;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.pdp-review-btn:hover {
+  background: var(--paper);
+  color: var(--ash);
+  box-shadow: inset 0 0 0 1px var(--ash);
+}
+
+.pdp-reviews-empty {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-switzer-stack);
+  font-size: 1rem;
+  color: var(--ink-prose);
+}
+
+/* Previous / next: two halves, image and label. */
+.pdp-nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--ink);
+}
+
+.pdp-nav-link {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--paper);
+  background: var(--ash);
+  min-height: 40svh;
+}
+
+.pdp-nav-img {
+  display: block;
+  width: 100%;
+  height: 40svh;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: transform 900ms var(--ease), opacity 400ms var(--ease);
+}
+
+.pdp-nav-link:hover .pdp-nav-img {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+.pdp-nav-body {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  gap: 0.35rem;
+  background: linear-gradient(to top, rgb(8 7 10 / 0.7), transparent 60%);
+}
+
+.pdp-nav-label {
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.pdp-nav-title {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-on-ash);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pdp-nav-next .pdp-nav-body {
+  align-items: flex-end;
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .pdp-squares {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pdp-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pdp-nav-next {
+    border-left: 1px solid rgb(239 238 235 / 0.25);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pdp-details-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+/* --- /about: opener --------------------------------------------------------
+   Copy first, then the photograph full-bleed. The headline lines sit in
+   masks so GSAP can raise them; at rest they are simply visible.
+   ------------------------------------------------------------------------ */
+.ab-opener {
+  padding-top: clamp(8rem, 16vh, 11rem);
+}
+
+.ab-opener-copy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.ab-h1 {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ab-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.ab-line-inner {
+  display: block;
+  will-change: transform;
+}
+
+.ab-line--italic .ab-line-inner {
+  font-style: italic;
+}
+
+.ab-lede {
+  max-width: 44ch;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+}
+
+.ab-opener-media {
+  overflow: hidden;
+  height: clamp(20rem, 70vh, 44rem);
+  background: var(--ash);
+}
+
+.ab-opener-img {
+  display: block;
+  width: 100%;
+  height: 115%;
+  object-fit: cover;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* --- /about: the house ------------------------------------------------------ */
+.ab-house {
+  padding-block: var(--section-y);
+}
+
+.ab-house-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+}
+
+.ab-h2 {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ab-statement {
+  max-width: none;
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.ab-statement strong {
+  font-weight: 600;
+}
+
+.ab-ledger {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--ink);
+}
+
+.ab-ledger-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 35%) 1fr;
+  gap: 1rem;
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+}
+
+.ab-ledger-row dt {
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  padding-top: 0.2em;
+}
+
+.ab-ledger-row dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.ab-ledger-row[data-confirm] dd {
+  color: var(--smoke);
+}
+
+@media (min-width: 1024px) {
+  .ab-house-grid {
+    grid-template-columns: 1.1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* --- /about: the shoot -------------------------------------------------- */
+.ab-gallery {
+  position: relative;
+  overflow: hidden;
+  background: var(--ash);
+  color: var(--paper);
+}
+
+.ab-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  width: max-content;
+  padding: clamp(2rem, 6vh, 4rem) var(--gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+.ab-track::-webkit-scrollbar {
+  display: none;
+}
+
+.ab-track-title {
+  flex: 0 0 auto;
+  padding-right: clamp(1rem, 4vw, 4rem);
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-on-ash);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  line-height: 1;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: var(--paper);
+  opacity: 0.9;
+}
+
+.ab-frame {
+  flex: 0 0 auto;
+  margin: 0;
+  height: 60svh;
+  overflow: hidden;
+  scroll-snap-align: center;
+  background: #000;
+}
+
+.ab-frame--1 {
+  aspect-ratio: 3 / 2;
+}
+
+.ab-frame--2 {
+  aspect-ratio: 4 / 5;
+  height: 68svh;
+}
+
+.ab-frame--3 {
+  aspect-ratio: 1 / 1;
+  height: 52svh;
+}
+
+.ab-frame img {
+  display: block;
+  width: 116%;
+  height: 100%;
+  margin-left: -8%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+@media (min-width: 1024px) {
+  .ab-gallery-pin {
+    height: 100svh;
+    display: flex;
+    align-items: center;
+  }
+
+  .ab-track {
+    overflow: visible;
+    max-width: none;
+    scroll-snap-type: none;
+    padding-inline: var(--gutter) 20vw;
+    will-change: transform;
+  }
+}
+
+/* --- /about: the people ---------------------------------------------------- */
+.ab-people {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.ab-people-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.ab-people-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ab-people-title .four-title-the {
+  font-size: clamp(2rem, 3.2vw, 3.2rem);
+}
+
+.ab-people-title .four-title-epithet {
+  font-size: clamp(2.6rem, 4.4vw, 4.4rem);
+}
+
+/* The empty portrait: the mesh field in a frame, the aspect of a portrait. */
+.people-portrait {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  aspect-ratio: 3 / 4;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: var(--paper-raised);
+  background-image: var(--mesh);
+  background-size: var(--mesh-size);
+  border: 1px solid var(--rule);
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.people-role {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.people-bio-empty {
+  color: var(--smoke);
+}
+
+/* --- /about: what we make ------------------------------------------------- */
+.ab-make {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.ab-circles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(3rem, 6vw, 4rem) var(--gutter);
+}
+
+.ab-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.ab-circle-img {
+  display: block;
+  width: min(70vw, 18rem);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  transition: transform 700ms var(--ease);
+}
+
+.ab-circle-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 900ms var(--ease);
+}
+
+.ab-circle:hover .ab-circle-img {
+  transform: rotate(-4deg);
+}
+
+.ab-circle:hover .ab-circle-img img {
+  transform: scale(1.06);
+}
+
+.ab-circle-kicker {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.ab-circle-title {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ab-circle-body {
+  max-width: 34ch;
+  font-size: 0.9375rem;
+}
+
+.ab-circle-link {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+@media (min-width: 768px) {
+  .ab-circles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- /about: close ----------------------------------------------------------- */
+/* The closing composition: /ritual and /innovation. */
+.ab-close {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.ab-close-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.ab-close-h {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ab-close-lead {
+  font-size: calc(var(--text-display-xl) * 0.42);
+  margin-bottom: 0.15em;
+  margin-left: 0.1em;
+}
+
+.ab-close-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ab-close-sub {
+  margin: 0;
+  max-width: 36rem;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--ink-prose);
+}
+
+.cta-button.cta-button--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.cta-button.cta-button--ghost:hover,
+.cta-button.cta-button--ghost:focus-visible {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* --- /for-business ------------------------------------------------------- */
+.biz-h2 {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.biz-note {
+  margin: 0;
+  max-width: 48ch;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--smoke);
+}
+
+/* 1 — opener */
+.biz-opener {
+  padding-top: clamp(8rem, 16vh, 11rem);
+}
+
+.biz-opener-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.biz-h1 {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.biz-h1-line {
+  display: block;
+}
+
+/* INNOVATION. is 7.8x the font size wide; at the phone display size it
+   overran the column by 14px — measured. */
+@media (max-width: 767px) {
+  .biz-h1 {
+    font-size: 10.5vw;
+  }
+}
+
+.biz-h1-line--italic {
+  font-style: italic;
+}
+
+.biz-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.biz-word {
+  display: inline-block;
+  will-change: transform;
+}
+
+.biz-lede {
+  max-width: 44ch;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+}
+
+.biz-frame {
+  overflow: hidden;
+  height: clamp(18rem, 64vh, 40rem);
+  background: var(--ash);
+  clip-path: inset(0 0 0 0);
+}
+
+.biz-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+/* 2 — statement */
+.biz-statement {
+  padding-block: var(--section-y);
+}
+
+.biz-statement-p {
+  margin: 0 auto;
+  max-width: 34ch;
+  text-align: center;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.6vw, 2.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+
+.biz-sw {
+  display: inline;
+}
+
+/* 3 — clients */
+.biz-clients {
+  padding-block: var(--section-y) 0;
+  border-top: 1px solid var(--rule);
+  /* Rows enter from off-screen on both sides: clip, or the page gains a
+     horizontal scroll — measured 1682px wide on a 1425px viewport. */
+  overflow-x: clip;
+}
+
+.biz-rows {
+  list-style: none;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.biz-row {
+  border-bottom: 1px solid var(--ink);
+  transition: background-color 240ms var(--ease), color 240ms var(--ease);
+  will-change: transform, opacity;
+}
+
+.biz-row:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.biz-row-inner {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(1rem, 4vw, 4rem);
+  padding-block: clamp(1rem, 2.4vw, 2rem);
+}
+
+.biz-row-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: clamp(1rem, 1.4vw, 1.4rem);
+  min-width: 2.5rem;
+}
+
+.biz-row-label {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 4.2vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* 4 — offer */
+.biz-offer {
+  padding-block: var(--section-y);
+  /* Cards mid-flip project past the viewport edge under perspective;
+     clipped, or the phone gains 14px of horizontal scroll — measured. */
+  overflow-x: clip;
+}
+
+.biz-offer-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem 2rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.biz-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gutter);
+  perspective: 1200px;
+}
+
+.biz-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  min-height: 14rem;
+  padding: 1.5rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.biz-card-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.biz-card-title {
+  margin-top: auto;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.biz-card-confirm {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--smoke);
+}
+
+/* 5 — process */
+.biz-process {
+  position: relative;
+  background: var(--ash);
+  color: var(--paper);
+}
+
+.biz-process-pin {
+  padding-block: var(--section-y);
+}
+
+.biz-process-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.biz-process .biz-h2 {
+  color: var(--paper);
+}
+
+.biz-process-head .type-body {
+  color: rgb(239 238 235 / 0.7);
+  margin-top: 0.75rem;
+}
+
+.biz-steps {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+.biz-line {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: rgb(239 238 235 / 0.18);
+}
+
+.biz-line-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.biz-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 1rem;
+  opacity: 0.35;
+  transform: translateX(0);
+  transition: opacity 320ms var(--ease), transform 480ms var(--ease);
+}
+
+.biz-step[data-active] {
+  opacity: 1;
+}
+
+.biz-step[data-current] {
+  transform: translateX(0.75rem);
+}
+
+.biz-step::before {
+  content: "";
+  position: absolute;
+  left: -2.5rem;
+  top: 0.55rem;
+  width: 10px;
+  height: 10px;
+  margin-left: 0.5rem;
+  transform: translateX(-4px);
+  border-radius: 50%;
+  background: rgb(239 238 235 / 0.35);
+  transition: background-color 320ms var(--ease);
+}
+
+.biz-step[data-active]::before {
+  background: var(--paper);
+}
+
+.biz-step-no {
+  grid-row: 1 / 3;
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.biz-step-name {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.biz-step-body {
+  font-family: var(--font-switzer-stack);
+  font-size: 1rem;
+  color: rgb(239 238 235 / 0.75);
+  margin-top: 0.35rem;
+}
+
+/* 6 — made for your brand */
+.biz-made {
+  padding-block: var(--section-y);
+}
+
+.biz-made-head {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.biz-made-h {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.biz-made-lead {
+  font-size: calc(var(--text-display-xl) * 0.42);
+  margin-bottom: 0.15em;
+  margin-left: 0.1em;
+}
+
+.biz-made-p {
+  max-width: 58ch;
+}
+
+.biz-made-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.biz-made-sticky {
+  position: relative;
+  /* 3:2, the shoot photographs own shape: each shows whole. */
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.biz-made-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 700ms var(--ease), transform 1200ms var(--ease);
+}
+
+.biz-made-img[data-active] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.biz-made-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.biz-made-row {
+  padding-block: clamp(2.5rem, 12vh, 8rem);
+  border-top: 1px solid var(--rule);
+  opacity: 0.4;
+  transition: opacity 400ms var(--ease);
+}
+
+.biz-made-row[data-active] {
+  opacity: 1;
+}
+
+.biz-made-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--smoke);
+}
+
+.biz-made-title {
+  margin: 0.5rem 0 0.75rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* 7 — collaborations: one case study per client (CaseStudies.tsx). Dark
+   pinned cover, a lit-up summary beside a parallax photograph, the lids
+   rolling in, then a pinned sideways gallery of white cards. */
+.cs {
+  border-top: 1px solid var(--rule);
+}
+
+.cs-head {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  padding-block: var(--section-y) clamp(3rem, 6vw, 5rem);
+}
+
+.cs-eyebrow,
+.cs-index,
+.cs-gallery-head {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.cs-eyebrow {
+  color: rgb(16 16 18 / 0.6);
+}
+
+.cs-headline {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.cs-headline-italic {
+  font-style: italic;
+}
+
+.cs-sub {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(0.875rem, 1.4vw, 1.25rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.cs-project + .cs-project {
+  border-top: 1px solid var(--rule);
+}
+
+/* Cover */
+.cs-cover {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-block: clamp(5rem, 10vh, 7rem) clamp(2.5rem, 6vh, 4rem);
+  box-sizing: border-box;
+}
+
+.cs-cover-grid {
+  width: var(--nav-width);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: center;
+}
+
+.cs-cover-text {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.5rem);
+}
+
+.cs-index {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6em;
+  color: rgb(239 238 235 / 0.6);
+}
+
+/* The flag beside the origin: small, a hairline frame so white bands hold
+   their edge on the dark cover. */
+.cs-flag {
+  display: block;
+  width: 1.9em;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgb(239 238 235 / 0.25);
+}
+
+.cs-client {
+  margin: 0;
+  display: flex;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-on-ash, 6);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(4rem, 13vw, 12rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: #efeeeb;
+}
+
+.cs-char-mask {
+  display: inline-block;
+  overflow: clip;
+  padding-bottom: 0.04em;
+}
+
+.cs-char {
+  display: inline-block;
+}
+
+.cs-line {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-weight: 500;
+  font-variation-settings: "opsz" 11;
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  color: #efeeeb;
+}
+
+.cs-facts {
+  margin: clamp(0.5rem, 2vh, 1.5rem) 0 0;
+  max-width: 30rem;
+}
+
+.cs-fact {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.7rem 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+}
+
+.cs-fact dt {
+  color: rgb(239 238 235 / 0.55);
+}
+
+.cs-fact dd {
+  margin: 0;
+  text-align: right;
+  color: #efeeeb;
+}
+
+.cs-fact-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgb(239 238 235 / 0.18);
+  transform-origin: left center;
+}
+
+.cs-cover-media {
+  overflow: hidden;
+  aspect-ratio: 1;
+  clip-path: circle(72% at 50% 50%);
+  will-change: clip-path;
+}
+
+.cs-cover-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Story */
+.cs-story {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  padding-block: var(--section-y);
+}
+
+.cs-summary {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.cs-summary strong {
+  font-weight: 700;
+}
+
+.cs-feature {
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: var(--ash);
+}
+
+.cs-feature img {
+  display: block;
+  width: 100%;
+  height: 124%;
+  margin-top: -12%;
+  object-fit: cover;
+}
+
+/* Variants: the lids, round. */
+.cs-variants {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--section-y);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(3rem, 6vw, 5rem);
+  justify-items: center;
+  overflow: hidden;
+}
+
+.cs-variant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: min(80vw, 26rem);
+}
+
+.cs-lid {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0b0b0d;
+  box-shadow: 0 30px 60px -30px rgb(8 7 10 / 0.5);
+}
+
+.cs-lid img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Only the lid: the photo is clipped to the lid's own outline (measured:
+     63% x 57% of the frame, centred at 50% / 51.3%) and enlarged to fill
+     the disc, so no studio white shows and nothing is cut. */
+  clip-path: ellipse(31.8% 28.8% at 50% 51.3%);
+  transform: scale(1.56);
+  transform-origin: 50% 51.3%;
+}
+
+.cs-variant-name {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1rem, 1.6vw, 1.4rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.cs-swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+}
+
+/* Gallery */
+.cs-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.5rem);
+  padding-block: clamp(2rem, 6vh, 4rem);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.cs-gallery-head {
+  width: var(--nav-width);
+  margin-inline: auto;
+  display: flex;
+  justify-content: space-between;
+  color: rgb(16 16 18 / 0.6);
+}
+
+.cs-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.cs-track {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--gutter);
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.cs-track::-webkit-scrollbar {
+  display: none;
+}
+
+.cs-card {
+  flex: 0 0 75vw;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #ffffff;
+  scroll-snap-align: center;
+}
+
+.cs-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cs-progress {
+  width: var(--nav-width);
+  margin-inline: auto;
+  height: 1px;
+  background: var(--rule);
+}
+
+.cs-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left center;
+}
+
+@media (min-width: 768px) {
+  .cs-story {
+    grid-template-columns: 1.2fr 1fr;
+  }
+
+  .cs-story--solo {
+    grid-template-columns: 1fr;
+    max-width: 52rem;
+  }
+
+  .cs-variants {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cs-card {
+    flex-basis: 40vw;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cs-cover-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cs-cover-media {
+    max-height: 80svh;
+    justify-self: end;
+    width: min(100%, 80svh);
+  }
+
+  .cs-gallery {
+    height: 100vh;
+    height: 100svh;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  /* Pinned: the scroll drives the track, so no native scroller. */
+  .cs-track {
+    overflow: visible;
+    scroll-snap-type: none;
+    will-change: transform;
+  }
+
+  .cs-card {
+    flex-basis: auto;
+    height: min(56svh, 30vw);
+  }
+
+  /* Two tracks share the height. */
+  .cs-tracks:has(.cs-track + .cs-track) .cs-card {
+    height: min(32svh, 18vw);
+  }
+}
+
+
+/* 8 — enquiry */
+.biz-enquiry {
+  /* Above the collaboration stack, so it slides over the last card. */
+  position: relative;
+  z-index: 10;
+  background: var(--paper);
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.biz-enquiry-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+/* .cta-button sets align-self: flex-start; centred here with the title. */
+.biz-enquiry-head .cta-button {
+  align-self: center;
+  margin-top: 1rem;
+}
+
+.biz-enquiry-title {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+@media (min-width: 768px) {
+  .biz-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .biz-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .biz-process-pin {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .biz-process-grid {
+    grid-template-columns: 1fr 1.4fr;
+    width: 100%;
+  }
+
+  .biz-made-grid {
+    grid-template-columns: 1fr 1fr;
+    /* Stretch, not start: the sticky image needs its column to be as tall
+       as the rows beside it, or it has nothing to stick within. */
+    align-items: stretch;
+  }
+
+  /* 3:2 like the shoot photographs, held at the middle of the screen. */
+  .biz-made-sticky {
+    position: sticky;
+    top: calc(50vh - 15vw);
+    aspect-ratio: 3 / 2;
+  }
+
+  /* Each row a good part of a viewport, so the sticky image has a column
+     of ~180vh to hold within — three short rows exhausted it in 390px. */
+  .biz-made-row {
+    min-height: 58vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+}
+
+/* --- /ritual ------------------------------------------------------------- */
+.rt-h2 {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.rt-confirm {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--smoke);
+}
+
+/* 1 — opener: the pearl */
+.rt-opener {
+  position: relative;
+  min-height: 220svh;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Sticky for the section's whole height: the pearl and the copy stay on
+   screen while the scroll drives the scale. */
+.rt-opener-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  /* overflow isolates blending to this box, so it must paint the paper
+     itself — or difference has a transparent backdrop outside the circle
+     and the copy vanishes there. */
+  background: var(--paper);
+}
+
+/* The Container is a stacking context (z-index), so the blend must sit on
+   it — an element blends only within its parent's context, and this one's
+   parent is the sticky wrapper that paints the paper. */
+.rt-opener-sticky > div {
+  position: relative;
+  z-index: 1;
+  mix-blend-mode: difference;
+}
+
+.rt-pearl {
+  position: absolute;
+  inset: 0;
+  background: var(--ash);
+  clip-path: circle(0 at 50% 50%);
+}
+
+.rt-opener-copy {
+  min-height: 100svh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-block: clamp(6rem, 12vh, 8rem) clamp(3rem, 6vh, 5rem);
+  /* Paper type under the Container's difference blend: ink where it sits
+     on paper, paper where the pearl has covered it — the inversion follows
+     the circle's edge. */
+  color: var(--paper);
+}
+
+.rt-opener-copy .type-eyebrow {
+  color: rgb(239 238 235 / 0.7);
+}
+
+.rt-h1 {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  line-height: 1;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.rt-h1-line {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .rt-h1-line {
+    white-space: nowrap;
+  }
+}
+
+.rt-h1-line--italic {
+  font-style: italic;
+}
+
+.rt-mask {
+  display: inline-block;
+  overflow: visible;
+  clip-path: inset(-0.5em -0.5em 0 -0.5em);
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.rt-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.rt-lede {
+  max-width: 40ch;
+  color: inherit;
+  opacity: 0.85;
+}
+
+@media (max-width: 767px) {
+  .rt-h1 {
+    font-size: 11vw;
+  }
+}
+
+/* 2 — the steps */
+.rt-steps {
+  position: relative;
+  background: var(--ash);
+  color: var(--paper);
+}
+
+.rt-steps-pin {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding-block: clamp(4rem, 8vh, 6rem);
+}
+
+.rt-stage {
+  width: var(--nav-width);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.rt-numerals {
+  position: relative;
+  width: clamp(9rem, 16vw, 15rem);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+}
+
+.rt-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.rt-ring-track {
+  fill: none;
+  stroke: rgb(239 238 235 / 0.18);
+  stroke-width: 1;
+}
+
+.rt-ring-fill {
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.rt-numeral {
+  position: absolute;
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-variation-settings: "opsz" var(--opsz-on-ash);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(3.5rem, 6.5vw, 6rem);
+  line-height: 1;
+  color: var(--paper);
+  backface-visibility: hidden;
+}
+
+.rt-step-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-height: 72svh;
+  overflow: hidden;
+  background: #000;
+}
+
+.rt-step-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, opacity;
+}
+
+.rt-step-copies {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-height: 12rem;
+}
+
+.rt-step-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rt-step-kicker {
+  font-family: var(--font-switzer-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(239 238 235 / 0.6);
+}
+
+.rt-step-name {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.rt-step-body {
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.5;
+  color: rgb(239 238 235 / 0.85);
+}
+
+.rt-steps .rt-confirm {
+  color: rgb(239 238 235 / 0.55);
+}
+
+@media (min-width: 1024px) {
+  .rt-stage {
+    grid-template-columns: minmax(10rem, 1fr) minmax(0, 1.4fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  .rt-step-copies {
+    display: grid;
+  }
+
+  .rt-step-copy {
+    grid-area: 1 / 1;
+  }
+}
+
+/* Phone and tablet: the steps stack, one panel each, nothing pinned. */
+@media (max-width: 1023px) {
+  .rt-numerals {
+    display: none;
+  }
+
+  .rt-step-media {
+    display: none;
+  }
+
+  .rt-step-copies {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .rt-step-copy-img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rt-step-copy-img {
+    display: none;
+  }
+}
+
+/* 3 — in the box */
+.rt-box {
+  padding-block: var(--section-y);
+  overflow-x: clip;
+}
+
+.rt-box-lede {
+  margin: 1rem 0 clamp(2.5rem, 5vw, 4rem);
+  max-width: 44ch;
+}
+
+.rt-box-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+
+.rt-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  will-change: transform, opacity;
+}
+
+.rt-item-img,
+.rt-item-blank {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--ash);
+}
+
+.rt-item-blank {
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: var(--paper-raised);
+  background-image: var(--mesh);
+  background-size: var(--mesh-size);
+  border: 1px solid var(--rule);
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.rt-item-no {
+  margin-top: 0.5rem;
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--smoke);
+}
+
+.rt-item-name {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+@media (min-width: 768px) {
+  .rt-box-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: auto;
+  }
+
+  /* A staggered composition, not a row. */
+  .rt-item--1 { grid-column: 1 / 3; }
+  .rt-item--2 { grid-column: 3 / 5; margin-top: 18%; }
+  .rt-item--3 { grid-column: 5 / 7; }
+  .rt-item--4 { grid-column: 2 / 4; margin-top: -10%; }
+  .rt-item--5 { grid-column: 4 / 6; margin-top: 8%; }
+}
+
+/* 4 — the heat line */
+.rt-heat {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+  background: var(--paper-raised);
+}
+
+.rt-heat-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.rt-heat-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: calc(var(--text-display-xl) * 0.6);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.rt-heat-lede {
+  max-width: 52ch;
+}
+
+.rt-heat-track {
+  position: relative;
+  height: 2px;
+  background: var(--rule);
+  margin-bottom: 2rem;
+}
+
+.rt-heat-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(to right, var(--ink) 0%, var(--ink) 55%, var(--gold-deep) 100%);
+}
+
+.rt-heat-pearl {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--ash);
+  box-shadow: 0 0 0 4px var(--paper-raised);
+  will-change: transform;
+}
+
+.rt-heat-states {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem 1.5rem;
+}
+
+.rt-heat-state {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  opacity: 0.35;
+  transition: opacity 320ms var(--ease);
+}
+
+.rt-heat-state[data-active] {
+  opacity: 1;
+}
+
+.rt-heat-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--smoke);
+}
+
+.rt-heat-name {
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.rt-heat-state[data-current] .rt-heat-name {
+  color: var(--gold-deep);
+}
+
+.rt-heat-body {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+  color: var(--ink-prose);
+}
+
+@media (min-width: 768px) {
+  .rt-heat-states {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 5 — the objects */
+.rt-objects {
+  padding-block: var(--section-y);
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.rt-objects-title {
+  color: var(--paper);
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.rt-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.75rem, 2vw, 2rem);
+  width: var(--nav-width);
+  margin-inline: auto;
+  align-items: start;
+}
+
+.rt-col {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 2rem);
+  will-change: transform;
+}
+
+.rt-col:nth-child(2) {
+  padding-top: 12%;
+}
+
+.rt-obj {
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.rt-obj img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  .rt-cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rt-col:nth-child(3) {
+    display: none;
+  }
+}
+
+/* --- Policies: /shipping /returns /privacy /terms --------------------------- */
+.pol {
+  position: relative;
+  padding-top: clamp(7rem, 14vh, 9rem);
+  padding-bottom: var(--section-y);
+}
+
+/* Reading progress, along the very top of the page. */
+.pol-progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 60;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+.pol-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+  border-bottom: 1px solid var(--ink);
+}
+
+.pol-title {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pol-title-inner {
+  display: block;
+  will-change: transform;
+}
+
+.pol-lede {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--smoke);
+}
+
+.pol-updated {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.pol-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.pol-index ol,
+.pol-index ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pol-index ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pol-index li a {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.15rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  text-decoration: none;
+  transition: color 200ms var(--ease);
+}
+
+.pol-index li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--ease);
+}
+
+.pol-index li[data-current] a,
+.pol-index li a:hover {
+  color: var(--ink);
+}
+
+.pol-index li[data-current] a::after {
+  transform: scaleX(1);
+}
+
+.pol-others {
+  margin-top: 2rem !important;
+  padding-top: 1.5rem !important;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.pol-others a {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  text-decoration: none;
+}
+
+.pol-others a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.pol-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.pol-section {
+  position: relative;
+  padding-top: 1.5rem;
+  scroll-margin-top: 6rem;
+}
+
+.pol-rule {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: left;
+}
+
+.pol-section-title {
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pol-section-no {
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.95em;
+  color: var(--smoke);
+}
+
+.pol-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pol-section-body .type-body {
+  max-width: 62ch;
+}
+
+.pol-confirm {
+  color: var(--smoke);
+}
+
+@media (min-width: 1024px) {
+  .pol-grid {
+    grid-template-columns: 16rem 1fr;
+    align-items: start;
+  }
+
+  .pol-index {
+    position: sticky;
+    top: 7rem;
+  }
+}
+
+/* --- 404 --------------------------------------------------------------------- */
+.nf {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(7rem, 14vh, 9rem) var(--section-y);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.nf-figure {
+  display: flex;
+  align-items: center;
+  gap: 0.04em;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(6rem, 22vw, 20rem);
+  line-height: 1;
+  color: var(--ink);
+  user-select: none;
+}
+
+.nf-mask {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.nf-four {
+  display: inline-block;
+  will-change: transform;
+}
+
+.nf-pearl {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  margin-inline: 0.06em;
+  border-radius: 50%;
+  background: var(--ash);
+  box-shadow: inset -0.08em -0.1em 0.18em rgb(239 238 235 / 0.12);
+  will-change: transform;
+}
+
+.nf-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.nf-title {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.nf-lede {
+  max-width: 44ch;
+}
+
+.nf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* --- Trust strip ---------------------------------------------------------
+   The band under the hero. Light ground, dark type, smaller and lighter than
+   the display marquee so it reads as a quiet index rather than a headline.
+   ------------------------------------------------------------------------ */
+.trust-strip .type-marquee {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+/* --- Section label rail --------------------------------------------------
+   One rail for the whole page. The chevrons are fixed and never move; only
+   the word between them changes. The outgoing word slides up and out, the
+   incoming word slides up into place.
+
+   The clip is what makes it read as a mechanical swap rather than a fade —
+   the word travels behind a hard edge instead of dissolving.
+   ------------------------------------------------------------------------ */
+.section-label-clip {
+  display: inline-block;
+  overflow: hidden;
+  /* 1.2em, so a descender is never sliced by the clip edge. */
+  height: 1.2em;
+  line-height: 1.2em;
+}
+
+.section-label-word {
+  display: inline-block;
+  transition:
+    transform 260ms var(--ease),
+    opacity 260ms var(--ease);
+}
+
+.section-label-word[data-phase="in"] {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.section-label-word[data-phase="out"] {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* Desktop only — below 1024px there is no room beside the content column. */
+@media (max-width: 1023px) {
+  .section-label-rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-label-word {
+    transition: none;
+  }
+}
+
+/* --- Sticky edge labels ---------------------------------------------------
+   Desktop only. Below 1024px — phone and tablet — there is no room beside the
+   content column for a vertical rail, so they are removed rather than shrunk.
+
+   They start invisible and fade in as their section enters, fading out as it
+   leaves. `data-visible` is set by an IntersectionObserver on the section, so
+   nothing appears on load before its section is in view.
+   ------------------------------------------------------------------------ */
+.sticky-label-rail {
+  display: flex;
+  opacity: 0;
+  transition: opacity 600ms var(--ease);
+}
+
+.sticky-label-rail[data-visible="true"] {
+  opacity: 1;
+}
+
+@media (max-width: 1023px) {
+  .sticky-label-rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-label-rail {
+    transition: none;
+  }
+}
+
+/* --- Hero sound toggle ---------------------------------------------------
+   Bottom-right corner of the hero. A frosted-glass disc with a fine-line
+   speaker: crossed out when muted; with sound on, two waves ripple outward.
+   ------------------------------------------------------------------------ */
+.sound-toggle {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #fff;
+  border: 1px solid rgb(239 238 235 / 0.35);
+  border-radius: 50%;
+  background: rgb(8 7 10 / 0.25);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform 320ms var(--ease-elastic);
+}
+
+.sound-toggle:hover,
+.sound-toggle:focus-visible {
+  background: rgb(8 7 10 / 0.5);
+  border-color: rgb(239 238 235 / 0.9);
+  transform: scale(1.08);
+}
+
+.sound-toggle svg {
+  display: block;
+  overflow: visible;
+}
+
+.sound-toggle .sound-on,
+.sound-toggle .sound-off {
+  transition: opacity 220ms var(--ease);
+}
+
+.sound-toggle .sound-on {
+  opacity: 0;
+}
+
+.sound-toggle[aria-pressed="true"] .sound-on {
+  opacity: 1;
+}
+
+.sound-toggle[aria-pressed="true"] .sound-off {
+  opacity: 0;
+}
+
+/* Sound on: each wave pulses outward in turn, quietly. */
+.sound-toggle[aria-pressed="true"] .sound-wave {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: sound-wave 1.6s var(--ease) infinite;
+}
+
+.sound-toggle[aria-pressed="true"] .sound-wave--2 {
+  animation-delay: 0.25s;
+}
+
+@keyframes sound-wave {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-toggle,
+  .sound-toggle .sound-on,
+  .sound-toggle .sound-off {
+    transition: none;
+  }
+
+  .sound-toggle[aria-pressed="true"] .sound-wave {
+    animation: none;
+  }
+}
+
+/* --- Custom cursor, hover state ------------------------------------------
+   Over an interactive target the dot drops the blend and fills with gold, so
+   it reads as a deliberate disc rather than an inversion of the background.
+   ------------------------------------------------------------------------ */
+.custom-cursor {
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    mix-blend-mode var(--dur-fast) step-end;
+}
+
+.custom-cursor[data-over="true"] {
+  background: var(--gold-deep);
+  mix-blend-mode: normal;
+}
+
+/* --- Section 03 two-column row -------------------------------------------
+   Portrait image left at ~40%, copy right. The right column's subhead is
+   top-aligned and its paragraph is pinned to the BOTTOM, level with the
+   image's bottom edge — the space between them stays empty on purpose.
+   Stacks to a single column on a phone, where that emptiness would just be a
+   hole.
+   ------------------------------------------------------------------------ */
+.approach-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+.approach-copy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* --- Section 03: the box row and the film --------------------------------
+   The row: the collage of the three tools on the left, the subhead and the
+   paragraph on the right, centred on each other. Then the film, full
+   width, opening through a pearl (03-FilmReveal).
+   ------------------------------------------------------------------------ */
+.fr-stage {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.fr-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: circle(75% at 50% 50%);
+  will-change: clip-path;
+}
+
+.fr-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, filter;
+}
+
+.fr-stage .sound-toggle {
+  right: var(--gutter);
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+}
+
+.approach-paragraph {
+  margin: 0;
+}
+
+.approach-paragraph strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+
+
+@media (min-width: 768px) {
+  .approach-row {
+    grid-template-columns: 40% 1fr;
+    align-items: stretch;
+  }
+
+  .approach-copy {
+    /* space-between is what pins the paragraph to the bottom of the column
+       and leaves the gap above it. */
+    justify-content: space-between;
+    gap: 0;
+  }
+}
+
+/* --- Section 02 column ---------------------------------------------------
+   Full container width at every breakpoint. The eyebrow, headline, subhead,
+   image, CTA bar and paragraph all sit on the same two vertical lines — the
+   container gutters — so nothing is inset relative to anything else.
+   ------------------------------------------------------------------------ */
+.innovation-column {
+  width: 100%;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  /* The image and the bar read as one object. */
+  gap: 16px;
+}
+
+/* Semibold rather than the token's Black. `type-marquee` stays 900 in the
+   design system — this is a local step-down for the product band, which sits
+   beside body copy and reads as shouting at full weight. */
+.innovation-column .type-marquee {
+  font-weight: 600;
+}
+
+/* --- CTA bar -------------------------------------------------------------
+   72px, the exact width of the image above it. Ink fill by default; on hover
+   it inverts to paper with dark text and the arrow travels out along its own
+   diagonal. The bar itself never moves — it is a shared edge.
+   ------------------------------------------------------------------------ */
+/* --- CTA button ----------------------------------------------------------
+   The inline sibling of .cta-bar: same treatment, but sized to its own text
+   rather than spanning a column. Used where a CTA closes a block instead of
+   capping an image.
+   ------------------------------------------------------------------------ */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+  height: var(--button-h);
+  padding-inline: 2rem;
+  background: var(--ash);
+  color: #fff;
+  border: 1px solid var(--ash);
+  text-decoration: none;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: clamp(0.8125rem, 1vw, 0.9375rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.cta-button:hover,
+.cta-button:focus-visible {
+  background: var(--paper);
+  color: var(--ash);
+}
+
+.cta-button:hover .cta-arrow,
+.cta-button:focus-visible .cta-arrow {
+  transform: translate(0.35em, -0.35em);
+}
+
+.cta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  height: var(--button-h);
+  background: var(--ash);
+  color: #fff;
+  border: 1px solid var(--ash);
+  text-decoration: none;
+  font-family: var(--font-switzer-stack);
+  /* Semibold, not Black — at 72px tall the bar already carries enough weight
+     from its fill, and Black at this size reads as shouting. */
+  font-weight: 600;
+  font-size: clamp(0.8125rem, 1.1vw, 1rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.cta-bar:hover,
+.cta-bar:focus-visible {
+  background: var(--paper);
+  color: var(--ash);
+}
+
+.cta-arrow {
+  display: inline-block;
+  transition: transform 320ms var(--ease-elastic);
+}
+
+.cta-bar:hover .cta-arrow,
+.cta-bar:focus-visible .cta-arrow {
+  transform: translate(0.35em, -0.35em);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-bar,
+  .cta-arrow {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Menu chrome — the hamburger and the close mark.
+   Both use an elastic overshoot on hover rather than a plain ease, so the
+   movement reads as a deliberate microinteraction and not a transition.
+   ========================================================================== */
+
+:root {
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- Home tile ------------------------------------------------------------
+   Top-left, in place of the logo: a house on the hamburger's paper tile, so
+   the header's three controls read as one set on any background.
+   ------------------------------------------------------------------------ */
+.home-tile {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  color: var(--ink);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.home-tile:hover,
+.home-tile:focus-visible {
+  background: color-mix(in srgb, var(--ink) 12%, var(--paper));
+}
+
+/* --- Hamburger ----------------------------------------------------------- */
+.hamburger {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+/* :not(.sr-only) — the visually-hidden label is a span too, and must keep its
+   own 1px clip box rather than being painted as a third bar. */
+.bag-chip {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.875rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.hamburger span:not(.sr-only) {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--ink);
+  transition: width 320ms var(--ease-elastic);
+}
+
+.hamburger:hover,
+.hamburger:focus-visible {
+  background: color-mix(in srgb, var(--ink) 12%, var(--paper));
+}
+
+/* The two lines shrink by different amounts, so the shrink reads as movement
+   rather than a uniform scale. */
+.hamburger:hover span:not(.sr-only):nth-of-type(2),
+.hamburger:focus-visible span:not(.sr-only):nth-of-type(2) {
+  width: 12px;
+}
+
+.hamburger:hover span:not(.sr-only):nth-of-type(3),
+.hamburger:focus-visible span:not(.sr-only):nth-of-type(3) {
+  width: 16px;
+}
+
+/* --- Close mark ---------------------------------------------------------- */
+.menu-close {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 360ms var(--ease-elastic);
+}
+
+.menu-close span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 2.5px;
+  background: var(--ink);
+  border-radius: 1px;
+}
+
+.menu-close span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.menu-close span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.menu-close:hover,
+.menu-close:focus-visible {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hamburger span:not(.sr-only),
+  .menu-close {
+    transition: none;
+  }
+  /* The header still hides and returns — it just changes state instantly
+     rather than sliding. */
+  header[data-hidden] {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Menu panel — items fade and rise with a 40ms stagger once the panel lands.
+   The delay is the panel's own travel time plus the per-item offset, so the
+   list starts moving as the panel arrives rather than during the slide.
+   ========================================================================== */
+
+.menu-item {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity 320ms var(--ease),
+    transform 320ms var(--ease);
+}
+
+.menu-panel[data-open="true"] .menu-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--dur-menu) + var(--i, 0) * 40ms);
+}
+
+/* The item. On hover an ink bar wipes in from the left behind it and the
+   text inverts to paper — the reference's highlight. The bar is a
+   background gradient sized from 0 to 100% so it needs no extra element. */
+.menu-link {
+  display: inline-block;
+  padding: 0.05em 0.35em;
+  font-family: var(--font-switzer-stack);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 2.2vw, 2.4rem);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--ink);
+  background-image: linear-gradient(var(--ink), var(--ink));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  transition:
+    background-size 260ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.menu-link:hover,
+.menu-link:focus-visible {
+  color: var(--paper);
+  background-size: 100% 100%;
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-link {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel,
+  .menu-item {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Marquee — CSS transform, 45s linear infinite, paused on hover.
+   ========================================================================== */
+
+.marquee {
+  overflow: hidden;
+  /* Feather both ends so the loop point never shows as a hard cut. */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6rem,
+    #000 calc(100% - 6rem),
+    transparent
+  );
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 45s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  /* The track holds two identical runs, so -50% is one seamless loop. */
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   The hero — the one orchestrated motion moment. Runs once, on load.
+   The still settles from 1.06 to 1.0 while the caption fades up over 900ms.
+   That is the whole hero; nothing else on the page animates on load.
+   ========================================================================== */
+
+.hero-still {
+  animation: hero-settle 1600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* --- Hero strip -----------------------------------------------------------
+   A band of paper across the foot of the hero, carrying the line and the
+   Caviar Bakhoor logotype. Hidden below the hero's edge on load; the first
+   scroll draws it up (01-HeroMedia). Under reduced motion it is in place.
+   ------------------------------------------------------------------------ */
+.hero-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: var(--paper);
+  padding: clamp(1.75rem, 4vh, 3rem) var(--gutter) clamp(1.5rem, 3.5vh, 2.75rem);
+  transform: translateY(100%);
+  will-change: transform;
+}
+
+.hero-caption {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vh, 1rem);
+}
+
+.hero-line-mask,
+.hero-logo-mask {
+  display: block;
+  overflow: clip;
+}
+
+/* The line: Bodoni Moda italic, sentence case, in ink on the paper. */
+.hero-line {
+  display: block;
+  padding-bottom: 0.08em;
+  font-family: var(--font-bodoni-stack);
+  font-style: italic;
+  font-weight: 500;
+  font-variation-settings: "opsz" 11;
+  font-size: clamp(1.25rem, 2.2vw, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-align: center;
+  /* The hero is .on-ash, which turns --ink light; the strip is paper, so
+     the line takes the canvas ink directly. */
+  color: #101012;
+}
+
+/* Phones: the mark on two lines, CAVIAR over BAKHOOR, each a slice of the
+   same traced SVG (CAVIAR is its left 42%, BAKHOOR its right 52%) — so each
+   word can run the full width and stand taller than section 02's headline. */
+.hero-logo-split {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .hero-logo-mask > .hero-logo {
+    display: none;
+  }
+
+  .hero-logo-split {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .hero-logo-word {
+    display: block;
+    width: 100%;
+    background: #101012;
+    -webkit-mask-image: url("/images/brand/caviar-bakhoor.svg");
+    mask-image: url("/images/brand/caviar-bakhoor.svg");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .hero-logo-word--1 {
+    aspect-ratio: calc(4176 * 0.42) / 312;
+    -webkit-mask-size: calc(100% / 0.42) 100%;
+    mask-size: calc(100% / 0.42) 100%;
+    -webkit-mask-position: left center;
+    mask-position: left center;
+  }
+
+  .hero-logo-word--2 {
+    aspect-ratio: calc(4176 * 0.52) / 312;
+    -webkit-mask-size: calc(100% / 0.52) 100%;
+    mask-size: calc(100% / 0.52) 100%;
+    -webkit-mask-position: right center;
+    mask-position: right center;
+  }
+}
+
+/* The logotype, drawn in ink through the traced SVG as a mask: black on
+   the white strip, no gold (site owner, 2026-10-17). Sized to
+   the strip's width: its capitals stand taller than the 6.48vw display
+   headline in section 02. */
+.hero-logo-mask {
+  width: min(100%, 1600px);
+}
+
+/* The mark is cut into its letters (HeroLogo.tsx): each glyph shows its own
+   slice of the traced SVG, so the letters can move on hover. */
+.hero-logo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4176 / 312;
+}
+
+.hero-glyph {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: #101012;
+  -webkit-mask-image: url("/images/brand/caviar-bakhoor.svg");
+  mask-image: url("/images/brand/caviar-bakhoor.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* The mask clips only its foot, so the scroll entrance still rises out of
+   it, but letters lifting on hover are not cut off at the top. */
+@media (min-width: 768px) {
+  .hero-caption .hero-logo-mask {
+    overflow: visible;
+    clip-path: inset(-100% -10% 0 -10%);
+  }
+}
+
+/* The hero's sound toggle moves to the top-right, under the header, so
+   the strip and the full-width mark have the foot of the hero to
+   themselves. */
+.sound-toggle.hero-sound {
+  top: clamp(5.5rem, 12vh, 7rem);
+  bottom: auto;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-strip {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion — all non-essential motion becomes an instant state change
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- /about: the booklet spread -------------------------------------------
+   The client's printed booklet, second spread: a lead line, three
+   photographs in thin gold frames, each with a caption in Bodoni, staggered
+   as on the page. The frames are the section's one use of gold.
+   ------------------------------------------------------------------------ */
+.ab-booklet {
+  padding-block: var(--section-y);
+}
+
+.bk-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.bk-lead,
+.bk-caption {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--bone, #efeeeb);
+}
+
+.bk-lead {
+  font-size: clamp(1.35rem, 2.4vw, 2.1rem);
+  max-width: 30ch;
+}
+
+.bk-item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bk-frame {
+  border: clamp(4px, 0.5vw, 7px) solid var(--gold-deep);
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.bk-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bk-item--1 .bk-frame { aspect-ratio: 1; }
+.bk-item--2 .bk-frame { aspect-ratio: 4 / 3; }
+.bk-item--3 .bk-frame { aspect-ratio: 3 / 4; }
+
+.bk-caption {
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+  max-width: 28ch;
+}
+
+/* Desktop: the page's stagger. The square sits top-left; the Noir box to its
+   right, dropped, captioned above; the kit below-left, tall, captioned to
+   its right. */
+@media (min-width: 768px) {
+  .bk-grid {
+    grid-template-columns: 1.15fr 1fr;
+    column-gap: clamp(2rem, 4vw, 4rem);
+    row-gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+
+  .bk-lead {
+    grid-column: 1 / -1;
+  }
+
+  .bk-item--1 {
+    grid-column: 1;
+  }
+
+  .bk-item--2 {
+    grid-column: 2;
+    flex-direction: column-reverse;
+    margin-top: clamp(6rem, 18vw, 16rem);
+  }
+
+  .bk-item--3 {
+    grid-column: 1;
+    width: 78%;
+  }
+
+  .bk-item--3 .bk-caption {
+    position: absolute;
+  }
+
+  .bk-item--3 {
+    position: relative;
+  }
+
+  .bk-item--3 .bk-caption {
+    left: calc(100% + clamp(2rem, 4vw, 4rem));
+    bottom: 0;
+    width: max-content;
+    max-width: 26ch;
+  }
+}
+
+/* --- PDP, simplified (2026-10-17) ---------------------------------------- */
+/* What is in the box, in caps. */
+.pdp-list--caps {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8125rem;
+}
+
+/* The composition line stands alone now: no image below it. */
+.pdp-notes-section .pdp-notes-line {
+  margin-bottom: 0;
+}
+
+/* The other two fragrances: the /collection cards, side by side on wide
+   screens. The cards are 100svh there, which is a lot at the foot of a
+   product page, so they are shorter here. */
+.pdp-more .pcard {
+  min-height: 80svh;
+}
+
+/* The ritual film under the composition line: 16:9, full container width,
+   the sound toggle in its bottom-right corner. */
+.pdp-notes-section .pdp-notes-line {
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.pdp-film {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.pdp-film-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp-film .sound-toggle {
+  right: clamp(0.75rem, 2vw, 1.25rem);
+  bottom: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+/* --- Section 03: the box's three tools -----------------------------------
+   The subhead and the intro line, then one row per tool, alternating sides.
+   03-BoxRows animates the curtain, the numeral, the name, the rule and the
+   copy as each row scrolls in.
+   ------------------------------------------------------------------------ */
+.br-head {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  max-width: 44rem;
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.br-intro {
+  margin: 0;
+}
+
+.br-intro strong,
+.br-body strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.br-list {
+  list-style: none;
+  margin: clamp(3rem, 7vw, 6rem) 0 var(--section-y);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4rem, 10vw, 9rem);
+}
+
+.br-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.br-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  isolation: isolate;
+}
+
+/* The giant outlined numeral behind the copy. */
+.br-no {
+  position: absolute;
+  top: -0.42em;
+  left: -0.06em;
+  z-index: -1;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 6;
+  font-weight: 700;
+  font-size: clamp(7rem, 16vw, 15rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(16 16 18 / 0.18);
+  user-select: none;
+}
+
+.br-name-mask {
+  margin: 0;
+  overflow: clip;
+}
+
+.br-name {
+  display: block;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.br-rule {
+  display: block;
+  width: clamp(4rem, 8vw, 7rem);
+  height: 1px;
+  background: var(--ink);
+  transform-origin: left center;
+}
+
+.br-body {
+  margin: 0;
+  max-width: 34rem;
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+}
+
+.br-media {
+  position: relative;
+  overflow: hidden;
+}
+
+.br-img {
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--ash);
+}
+
+.br-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The ink curtain that sweeps across and uncovers the photograph. */
+.br-curtain {
+  position: absolute;
+  inset: 0;
+  background: var(--ash);
+  transform: translateX(-101%);
+  pointer-events: none;
+}
+
+/* Phones: the photograph first, then the copy. */
+@media (max-width: 767px) {
+  .br-media {
+    order: -1;
+  }
+}
+
+@media (min-width: 768px) {
+  .br-row {
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(3rem, 7vw, 7rem);
+  }
+
+  /* The middle row: photograph left, copy right. */
+  .br-row--flip .br-media {
+    order: -1;
+  }
+
+  .br-row--flip .br-copy {
+    padding-left: clamp(0rem, 2vw, 2rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .br-curtain {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   /innovation — the technology page. Black and white only (site owner,
+   2026-10-17). The plates borrow a lab explainer's card language: tracked
+   eyebrow, serif title, ruled tables with right-set values, arrow flows,
+   a ruled aside, a footer with the plate count.
+   ========================================================================== */
+.inv-opener-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-block: clamp(7rem, 16vh, 10rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+.inv-answer {
+  margin: 0;
+  max-width: 44rem;
+  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+}
+
+.inv-answer strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.inv-marquee {
+  border-block: 1px solid var(--rule);
+  padding-block: 1rem;
+}
+
+/* --- The plates ---------------------------------------------------------- */
+/* The client's technical deck, as seven chapters (InnovationPlates.tsx):
+   full-bleed bands at their natural height, light and dark alternating. */
+.pl-stage {
+  position: relative;
+  background: var(--paper);
+  border-top: 1px solid var(--ink);
+}
+
+.pl {
+  --pl-fg: #101012;
+  --pl-muted: rgb(16 16 18 / 0.6);
+  --pl-rule: rgb(16 16 18 / 0.14);
+  --pl-bg: #f7f5f1;
+}
+
+.pl--dark {
+  --pl-fg: #efeeeb;
+  --pl-muted: rgb(239 238 235 / 0.62);
+  --pl-rule: rgb(239 238 235 / 0.16);
+  --pl-bg: #0b0a0c;
+}
+
+.pl {
+  background: var(--pl-bg);
+  color: var(--pl-fg);
+  padding-block: clamp(4rem, 10vw, 8rem);
+}
+
+.pl + .pl:not(.pl--dark) {
+  border-top: 1px solid var(--pl-rule);
+}
+
+/* Wider than the page container: two columns need the room. */
+.pl-wrap {
+  width: calc(100% - 2 * var(--container-pad, 1.5rem));
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  .pl-wrap {
+    width: min(calc(100% - 17rem), 1200px);
+  }
+}
+
+.pl-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+/* Steps light as the drawn line reaches them. */
+.pl-step-no {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.pl-step.is-on .pl-step-no {
+  background: var(--pl-fg);
+  color: var(--pl-bg);
+}
+
+.pl-headrow,
+.pl-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-switzer-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pl-muted);
+}
+
+.pl-eyebrow {
+  display: block;
+}
+
+.pl-count {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.pl-foot {
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--pl-rule);
+}
+
+.pl-copy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.1rem, 2.2vw, 1.75rem);
+  min-width: 0;
+}
+
+.pl-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pl-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  font-size: clamp(2.2rem, 3.6vw, 3.75rem);
+  line-height: 1.04;
+  color: var(--pl-fg);
+}
+
+.pl-title-mask {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.06em;
+}
+
+.pl-title-line {
+  display: block;
+}
+
+.pl-lede {
+  margin: 0;
+  max-width: 34rem;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.5;
+  color: var(--pl-muted);
+}
+
+/* Small tracked caps: row labels, stage names, marks. */
+.pl-specs dt,
+.pl-step-label,
+.pl-stage-label,
+.pl-mark,
+.pl-callout dt,
+.pl-phase-label,
+.pl-inset figcaption {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pl-fg);
+}
+
+/* specs: label and value, ruled */
+.pl-specs {
+  margin: 0;
+}
+
+.pl-row {
+  position: relative;
+}
+
+.pl-specs .pl-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.2rem;
+  padding: 0.7rem 0;
+}
+
+.pl-specs dd {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.95rem;
+  color: var(--pl-muted);
+}
+
+.pl-row-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--pl-rule);
+  transform-origin: left center;
+}
+
+/* steps: numbered rings on a drawn line */
+.pl-steps {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.pl-step-line {
+  position: absolute;
+  left: 1.05rem;
+  top: 1rem;
+  bottom: 1rem;
+  width: 1px;
+  background: var(--pl-rule);
+  transform-origin: top center;
+}
+
+.pl-step {
+  display: grid;
+  grid-template-columns: 2.1rem 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.pl-step-no {
+  position: relative;
+  width: 2.1rem;
+  height: 2.1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--pl-fg);
+  background: var(--pl-bg);
+  font-family: var(--font-switzer-stack);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--pl-fg);
+}
+
+.pl-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pl-step-value {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.95rem;
+  color: var(--pl-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.pl-step-note {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.875rem;
+  color: var(--pl-muted);
+}
+
+/* stages: round figures, wood to pearl */
+.pl-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem 1rem;
+}
+
+.pl-stage-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.pl-stage-disc,
+.pl-phase-disc {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #d9d4cc;
+}
+
+.pl-stage-disc img,
+.pl-phase-disc img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pl-stage-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.pl-stage-caption {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--pl-muted);
+}
+
+.pl-stage-arrow {
+  display: none;
+}
+
+.pl-marks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--pl-rule);
+}
+
+.pl-mark {
+  padding: 0.9rem 0.75rem 0.25rem 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.pl-mark::before {
+  content: "";
+  display: block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-bottom: 0.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--pl-fg);
+}
+
+/* anatomy: leader-ruled callouts beside the pearl in section */
+.pl-callouts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.pl-callout {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-left: 3.25rem;
+}
+
+.pl-callout-rule {
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 2.5rem;
+  height: 1px;
+  background: var(--pl-fg);
+  transform-origin: left center;
+}
+
+.pl-callout-rule::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pl-fg);
+}
+
+.pl-callout dd {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.95rem;
+  color: var(--pl-muted);
+}
+
+/* phases: number, round figure, text */
+.pl-phases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-phase {
+  display: grid;
+  grid-template-columns: auto 5.5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--pl-rule);
+}
+
+.pl-phase:first-child {
+  border-top: 1px solid var(--pl-rule);
+}
+
+.pl-phase-no {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-size: 1.6rem;
+  color: var(--pl-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pl-phase-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pl-phase-body {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.925rem;
+  line-height: 1.5;
+  color: var(--pl-muted);
+}
+
+/* media: the main photograph, an optional inset figure under it */
+.pl-media {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-height: 0;
+}
+
+.pl-media-main {
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--ash);
+}
+
+.pl-media-main img,
+.pl-inset img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+.pl-inset {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.pl-inset img {
+  aspect-ratio: 16 / 9;
+  height: auto;
+}
+
+.pl-inset figcaption {
+  font-size: 0.7rem;
+  color: var(--pl-muted);
+}
+
+@media (min-width: 640px) {
+  .pl-stages,
+  .pl-marks {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .pl-phase {
+    grid-template-columns: 3rem 6.5rem 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Wide screens: copy and photograph side by side; the photograph holds
+   (sticky) while the copy scrolls past it. No fixed heights anywhere. */
+@media (min-width: 1024px) {
+  .pl-card {
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(3rem, 6vw, 6rem);
+    row-gap: clamp(2rem, 4vh, 3rem);
+    align-items: start;
+  }
+
+  .pl-headrow,
+  .pl-foot {
+    grid-column: 1 / -1;
+  }
+
+  .pl-copy {
+    justify-content: center;
+    gap: clamp(1.5rem, 3vh, 2.25rem);
+    min-height: min(74svh, 46rem);
+  }
+
+  .pl-specs .pl-row {
+    grid-template-columns: 1fr 1.25fr;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 0.85rem 0;
+  }
+
+  .pl-steps {
+    gap: 1.4rem;
+  }
+
+  .pl-media {
+    position: sticky;
+    top: 12svh;
+  }
+
+  /* The photograph keeps its own shape; it is never squeezed. */
+  .pl-media-main {
+    aspect-ratio: 4 / 5;
+    max-height: 74svh;
+    width: 100%;
+  }
+
+  /* The inset: a framed detail over the lower corner of the photograph,
+     so the pair always fits the screen and neither is cropped short. */
+  .pl-media:has(.pl-inset) {
+    padding-bottom: 9svh;
+  }
+
+  .pl-media:has(.pl-inset) .pl-media-main {
+    max-height: 64svh;
+    width: 88%;
+    margin-left: auto;
+  }
+
+  .pl-inset {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 52%;
+    gap: 0.6rem;
+  }
+
+  .pl-inset img {
+    border: 6px solid var(--pl-bg);
+    box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.45);
+  }
+
+
+  /* stages: one row across the whole plate, arrows between */
+  .pl--stages .pl-card {
+    grid-template-columns: 1fr;
+  }
+
+  .pl--stages .pl-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: end;
+    gap: 3rem;
+  }
+
+  .pl--stages .pl-lede {
+    max-width: 26rem;
+  }
+
+  /* Discs on one row, their text on the next; the arrows sit centred on
+     the discs' row. */
+  .pl-stages {
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem 1.25rem;
+  }
+
+  /* Explicit columns: an arrow with a definite row would otherwise be
+     placed before the stages and push them out of line. */
+  .pl-stages > :nth-child(1) { grid-column: 1; }
+  .pl-stages > :nth-child(2) { grid-column: 2; }
+  .pl-stages > :nth-child(3) { grid-column: 3; }
+  .pl-stages > :nth-child(4) { grid-column: 4; }
+  .pl-stages > :nth-child(5) { grid-column: 5; }
+  .pl-stages > :nth-child(6) { grid-column: 6; }
+  .pl-stages > :nth-child(7) { grid-column: 7; }
+
+  .pl-stage-item {
+    grid-row: span 2;
+    display: grid;
+    grid-template-rows: subgrid;
+    gap: 1rem;
+  }
+
+  .pl--stages .pl-copy {
+    min-height: 0;
+    gap: clamp(2.5rem, 5vh, 4rem);
+  }
+
+  .pl-stage-disc {
+    width: 100%;
+  }
+
+  .pl-stage-arrow {
+    display: block;
+    grid-row: 1;
+    align-self: center;
+    font-family: var(--font-switzer-stack);
+    color: var(--pl-muted);
+    transform-origin: left center;
+  }
+
+  /* phases: the head beside the list */
+  .pl--phases .pl-card {
+    grid-template-columns: 1fr;
+  }
+
+  .pl--phases .pl-copy {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+    min-height: 0;
+  }
+
+  .pl-phase {
+    grid-template-columns: 3.5rem 9rem 1fr;
+    gap: 2rem;
+    padding: 1.5rem 0;
+  }
+}
+
+/* --- Common questions ---------------------------------------------------- */
+.inv-faq {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--rule);
+}
+
+.inv-faq .pl-title {
+  margin-top: 0.75rem;
+}
+
+.inv-faq-list {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--ink);
+  max-width: 56rem;
+}
+
+.inv-faq-item {
+  border-bottom: 1px solid var(--rule);
+}
+
+.inv-faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 600;
+  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  color: var(--ink);
+}
+
+.inv-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.inv-faq-item summary::after {
+  content: "+";
+  font-family: var(--font-switzer-stack);
+  font-weight: 400;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.inv-faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.inv-faq-item p {
+  margin: 0 0 1.4rem;
+  max-width: 44rem;
+}
+
+
+/* /collection: the booklet spread, full bleed on black. */
+.booklet-plate {
+  background: var(--ash);
+  line-height: 0;
+}
+
+.booklet-plate-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Phones: the left page only (the cover lines and the four lids), so it
+   reads at a usable size. */
+@media (max-width: 767px) {
+  .booklet-plate-img {
+    aspect-ratio: 1260 / 1357;
+    object-fit: cover;
+    object-position: left center;
+  }
+}
+
+/* A variant shown as the whole tin, on a white disc. */
+.cs-lid--photo {
+  background: #ffffff;
+}
+
+.cs-lid--photo img {
+  clip-path: none;
+  transform: none;
+}
+
+/* Three variants in a row on wide screens. */
+@media (min-width: 1024px) {
+  .cs-variants:has(.cs-variant:nth-child(3)) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .cs-variants:has(.cs-variant:nth-child(3)) .cs-variant {
+    width: 100%;
+    max-width: 22rem;
+  }
+}
+
+.cs-client--as-is {
+  text-transform: none;
+}
+
+/* Names of more than one word wrap by word; long ones set smaller. */
+.cs-client {
+  flex-wrap: wrap;
+  column-gap: 0.22em;
+}
+
+.cs-word {
+  display: inline-flex;
+}
+
+.cs-client--long {
+  font-size: clamp(2.75rem, 6vw, 6rem);
+}
+
+/* A landscape cover keeps its shape instead of cropping to a square. */
+.cs-cover-media--wide {
+  aspect-ratio: auto;
+}
+
+@media (min-width: 1024px) {
+  .cs-cover-media--wide {
+    width: 100%;
+    max-height: none;
+  }
+}
+
+/* --- /about: the house, after the concept (AboutHouse.tsx) ----------------- */
+.ab-signature {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  font-family: var(--font-switzer-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ab-signature span {
+  white-space: nowrap;
+}
+
+.ab-signature-rule {
+  flex: none;
+  width: clamp(1.5rem, 4vw, 3rem);
+  height: 1px;
+  background: var(--ink);
+}
+
+.ah-eyebrow {
+  margin: 0 0 clamp(1rem, 2vw, 1.5rem);
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(16 16 18 / 0.6);
+}
+
+.on-ash .ah-eyebrow {
+  color: rgb(239 238 235 / 0.6);
+}
+
+.ah-line {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.ah-line-inner {
+  display: block;
+}
+
+.ah-line--italic .ah-line-inner,
+.ah-line-inner em {
+  font-style: italic;
+}
+
+.ah-phil-h,
+.ah-disc-h,
+.ah-approach-h,
+.ah-int-h,
+.ah-part-h {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+/* Philosophy: dark, full bleed */
+.ah-phil {
+  padding-block: var(--section-y);
+  background: var(--ash);
+  color: #efeeeb;
+}
+
+.ah-phil-h {
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  color: #efeeeb;
+}
+
+.ah-phil-body {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  max-width: 46rem;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1.05rem, 1.35vw, 1.3rem);
+  line-height: 1.6;
+  color: rgb(239 238 235 / 0.72);
+}
+
+/* Disciplines: six ruled rows */
+.ah-disc {
+  padding-block: var(--section-y);
+}
+
+.ah-disc-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1.5rem 3rem;
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.ah-disc-h {
+  font-size: clamp(3rem, 7vw, 7rem);
+  color: var(--ink);
+}
+
+.ah-disc-lede {
+  margin: 0;
+  max-width: 22rem;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.5;
+  color: var(--ink-prose);
+}
+
+.ah-disc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ah-disc-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  padding: clamp(1.4rem, 3vw, 2.4rem) 0;
+}
+
+.ah-disc-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--rule);
+  transform-origin: left center;
+}
+
+.ah-disc-end {
+  display: block;
+  height: 1px;
+  background: var(--rule);
+}
+
+.ah-disc-no {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: rgb(16 16 18 / 0.55);
+}
+
+.ah-disc-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  font-size: clamp(1.75rem, 3.4vw, 3.25rem);
+  line-height: 1.1;
+  color: var(--ink);
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* The pearl marker: a dot that swells on hover. */
+.ah-disc-pearl {
+  flex: none;
+  width: 0;
+  height: 0.42em;
+  margin-right: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), margin 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ah-disc-body {
+  grid-column: 2;
+  margin: 0;
+  max-width: 24rem;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-prose);
+}
+
+@media (hover: hover) {
+  .ah-disc-row:hover .ah-disc-pearl {
+    width: 0.42em;
+    margin-right: 0.35em;
+  }
+}
+
+/* Approach, then the integrated house */
+.ah-approach {
+  padding-block: var(--section-y);
+  text-align: center;
+  background: #e7e3dc;
+}
+
+.ah-approach-h {
+  font-size: clamp(2.4rem, 5.4vw, 5.25rem);
+  color: var(--ink);
+}
+
+.ah-approach-rule {
+  display: block;
+  width: 7rem;
+  height: 1px;
+  margin: clamp(1.75rem, 3vw, 2.5rem) auto;
+  background: var(--ink);
+}
+
+.ah-approach-body {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.7;
+  color: var(--ink-prose);
+}
+
+.ah-int {
+  padding-block: var(--section-y);
+}
+
+.ah-int-h {
+  font-size: clamp(2.4rem, 5vw, 4.75rem);
+  color: var(--ink);
+}
+
+.ah-int-frame {
+  position: relative;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  padding-top: 3px;
+}
+
+.ah-int-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: var(--ink);
+  transform-origin: left center;
+}
+
+.ah-int-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-left: 1px solid var(--rule);
+  border-top: 1px solid var(--rule);
+}
+
+.ah-int-cell {
+  --lit: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: clamp(8rem, 14vw, 11rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+  color: color-mix(in srgb, #efeeeb calc(var(--lit) * 100%), #101012);
+}
+
+/* The current stage fills from below. */
+.ah-int-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleY(var(--lit));
+  transform-origin: bottom center;
+}
+
+.ah-int-no,
+.ah-int-name {
+  position: relative;
+}
+
+.ah-int-no {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+.ah-int-name {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+  line-height: 1.05;
+}
+
+/* Partnership: dark, centred */
+.ah-part {
+  padding-block: var(--section-y);
+  background: var(--ash);
+  color: #efeeeb;
+  text-align: center;
+}
+
+.ah-part-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ah-part-h {
+  font-size: clamp(2.4rem, 5.4vw, 5.25rem);
+  color: #efeeeb;
+}
+
+.cta-button.ah-part-cta {
+  /* .cta-button sets align-self: flex-start; this close is centred. */
+  align-self: center;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  background: #efeeeb;
+  color: #101012;
+  border-color: #efeeeb;
+}
+
+.ah-part-sign {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  font-family: var(--font-switzer-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(239 238 235 / 0.55);
+}
+
+@media (min-width: 768px) {
+  .ah-disc-row {
+    grid-template-columns: 4rem 1.3fr 1fr;
+    align-items: center;
+  }
+
+  .ah-disc-body {
+    grid-column: 3;
+    justify-self: end;
+  }
+
+  .ah-int-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .ah-disc-row:hover .ah-disc-title {
+    transform: translateX(0.5rem);
+  }
+}
+
+/* /ritual opener: words keep their letters together; lines wrap between words. */
+.rt-word-inner {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* /contact: the WhatsApp button in place of the form, centred. */
+.contact-whatsapp {
+  display: flex;
+  justify-content: center;
+  margin-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* /for-business: "Development" is one long word; at the phone display size
+   (12vw) it ran past the screen edge. */
+@media (max-width: 767px) {
+  .biz-made-h .type-display-xl {
+    font-size: 10vw;
+  }
+}
+
+/* Home 06: Tailored collection development, centred under the opener, then
+   the row of pearls that separates it from the close. */
+.four-tailored {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1rem, 1.5vw, 1.5rem);
+  margin-top: clamp(3rem, 7vw, 6rem);
+  text-align: center;
+}
+
+.four-tailored .cta-button {
+  align-self: center;
+}
+
+.four-tailored-copy {
+  max-width: 58ch;
+}
+
+.four-pearls {
+  margin-top: clamp(3rem, 7vw, 6rem);
+}
+
+/* Innovation plate 06: the pearl in section with leader-line callouts
+   (InnovationPlates.tsx). Phones and tablets: the photograph, then the
+   labels as a list. Wide: the labels sit over the dark right of the
+   photograph, each line drawn from its point on the pearl. */
+.pl--anatomy .pl-card {
+  grid-template-columns: 1fr;
+}
+
+.pl-anat {
+  margin: 0;
+}
+
+.pl-anat-stage {
+  position: relative;
+}
+
+.pl-anat-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pl-anat-lines,
+.pl-anat-dot {
+  display: none;
+}
+
+.pl-anat-labels {
+  margin: 1.5rem 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.pl-anat-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pl-anat-label dt {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pl-fg);
+}
+
+.pl-anat-label dd {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--pl-muted);
+}
+
+@media (min-width: 640px) {
+  .pl-anat-labels {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .pl-anat-lines {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* The viewBox is the photograph's own 16:9 (160 by 90), so the drawing
+     never stretches: 0.14 units is a hairline at this width. */
+  .pl-anat-line {
+    fill: none;
+    stroke: rgb(239 238 235 / 0.7);
+    stroke-width: 0.14;
+    stroke-dasharray: 1;
+  }
+
+  .pl-anat-head {
+    margin-bottom: 0.5rem;
+  }
+
+  .pl-anat-dot {
+    display: block;
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: #efeeeb;
+    box-shadow: 0 0 0 3px rgb(239 238 235 / 0.2);
+  }
+
+  .pl-anat-labels {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: block;
+  }
+
+  .pl-anat-label {
+    position: absolute;
+    left: 62%;
+    right: 3%;
+    transform: translateY(-0.7em);
+  }
+
+  .pl-anat-label dd {
+    color: rgb(239 238 235 / 0.85);
+  }
+}
+
+/* /contact: the tins among their boxes, full bleed, before the credentials. */
+.contact-photo {
+  margin: 0;
+  background: var(--ash);
+  line-height: 0;
+}
+
+.contact-photo img {
+  display: block;
+  width: 100%;
+  height: clamp(18rem, 60svh, 40rem);
+  object-fit: cover;
+}
+
+/* /for-business Made, phones: the picture holds under the header while the
+   rows pass beneath it, so its five photographs are seen changing. */
+@media (max-width: 1023px) {
+  .biz-made-col {
+    position: sticky;
+    top: 4.5rem;
+    z-index: 2;
+    background: var(--paper);
+    padding-bottom: 1rem;
+  }
+}
+
+/* --- Home 05b: the royal visit (05b-Visit.tsx) ------------------------------ */
+.vs-stage {
+  padding-block: var(--section-y);
+  color: #efeeeb;
+}
+
+.vs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.vs-copy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.5rem);
+}
+
+.vs-eyebrow {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(239 238 235 / 0.6);
+}
+
+.vs-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  font-size: clamp(2.4rem, 4.6vw, 4.75rem);
+  line-height: 1.02;
+  color: #efeeeb;
+}
+
+.vs-line {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.vs-line-inner {
+  display: block;
+}
+
+.vs-line--italic {
+  font-style: italic;
+}
+
+.vs-body {
+  margin: 0;
+  max-width: 34rem;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
+  line-height: 1.6;
+  color: rgb(239 238 235 / 0.72);
+}
+
+.vs-body strong {
+  font-weight: 600;
+  color: #efeeeb;
+}
+
+.vs-notes {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  max-width: 30rem;
+}
+
+.vs-note {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgb(239 238 235 / 0.16);
+}
+
+.vs-note-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: #efeeeb;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.vs-note-no {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-size: 1.25rem;
+  color: rgb(239 238 235 / 0.6);
+}
+
+.vs-note-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.vs-note-label {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #efeeeb;
+}
+
+.vs-note-body {
+  font-family: var(--font-switzer-stack);
+  font-size: 0.95rem;
+  color: rgb(239 238 235 / 0.72);
+}
+
+.vs-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  max-width: 30rem;
+  margin-top: 0.5rem;
+}
+
+.vs-link {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #efeeeb;
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+}
+
+.vs-credit {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.75rem;
+  color: rgb(239 238 235 / 0.5);
+}
+
+.vs-figure {
+  margin: 0;
+}
+
+.vs-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 720 / 920;
+  background: #000;
+}
+
+.vs-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.vs-shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vs-mark {
+  position: absolute;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: -2.25rem 0 0 -2.25rem;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 6px rgb(255 255 255 / 0.18), 0 6px 24px rgb(0 0 0 / 0.45);
+}
+
+.vs-mark-no,
+.vs-band-no {
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+}
+
+.vs-mark-no {
+  position: absolute;
+  left: 100%;
+  top: -0.6rem;
+  margin-left: 0.4rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.7);
+}
+
+.vs-band {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.vs-band-line {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 0.3;
+  stroke-dasharray: 1;
+}
+
+.vs-band-no {
+  font-size: 2.6px;
+  letter-spacing: 0.1px;
+  fill: #fff;
+}
+
+@media (min-width: 1024px) {
+  /* Pinned: the stage is one screen, the photograph its full height. */
+  .vs-stage {
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-block: clamp(4rem, 9vh, 6rem) clamp(2rem, 5vh, 3rem);
+    box-sizing: border-box;
+  }
+
+  .vs-stage > div {
+    width: 100%;
+  }
+
+  .vs-grid {
+    grid-template-columns: 1.05fr 1fr;
+    align-items: center;
+    column-gap: clamp(3rem, 6vw, 6rem);
+  }
+
+  .vs-frame {
+    height: min(78svh, 46rem);
+    width: auto;
+    margin-left: auto;
+  }
+}
+
+/* --- Home 05c: In their hands, a sideways track (05c-Ugc.tsx) ------------- */
+.ugc {
+  overflow: hidden;
+}
+
+.ugc-stage {
+  padding-block: var(--section-y);
+}
+
+/* Phones: the heading, then a swipe row. */
+.ugc-track {
+  list-style: none;
+  margin: 0;
+  padding: 0 1.5rem 1rem;
+  scroll-padding-inline: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.ugc-track::-webkit-scrollbar {
+  display: none;
+}
+
+.ugc-intro {
+  flex: 0 0 84vw;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: center;
+}
+
+.ugc-eyebrow {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 600;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(16 16 18 / 0.6);
+}
+
+.ugc-title {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: var(--text-display-xl);
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ugc-line {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.ugc-line-inner {
+  display: block;
+}
+
+.ugc-line--italic {
+  font-style: italic;
+}
+
+.ugc-copy {
+  margin: 0;
+  max-width: 26rem;
+  font-family: var(--font-switzer-stack);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.55;
+  color: var(--ink-prose);
+}
+
+.ugc-card {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.ugc-card--video .ugc-media {
+  width: min(66vw, 17rem);
+  aspect-ratio: 9 / 16;
+}
+
+.ugc-card--image .ugc-media {
+  /* Phones: the photograph keeps its own 3:2. */
+  width: min(84vw, 26rem);
+  aspect-ratio: 3 / 2;
+}
+
+.ugc-media {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: var(--ash);
+  box-shadow: 0 30px 60px -30px rgb(8 7 10 / 0.55);
+}
+
+.ugc-video,
+.ugc-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ugc-sound {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  border-radius: 50%;
+  background: rgb(8 7 10 / 0.45);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.ugc-sound svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.ugc-sound[aria-pressed="true"] {
+  background: #fff;
+  color: var(--ash);
+}
+
+.ugc-caption {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  font-family: var(--font-switzer-stack);
+}
+
+.ugc-caption-no {
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-size: 1.1rem;
+  color: rgb(16 16 18 / 0.55);
+}
+
+.ugc-caption-title {
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ugc-caption-credit {
+  flex-basis: 100%;
+  font-size: 0.85rem;
+  color: rgb(16 16 18 / 0.55);
+}
+
+.ugc-meter {
+  display: none;
+}
+
+/* Wide screens: pinned; the scroll drives the track sideways. */
+@media (min-width: 1024px) {
+  .ugc-stage {
+    height: 100vh;
+    height: 100svh;
+    box-sizing: border-box;
+    padding-block: clamp(4rem, 9vh, 6rem) clamp(3rem, 7vh, 4.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vh, 2.5rem);
+  }
+
+  .ugc-track {
+    overflow: visible;
+    scroll-snap-type: none;
+    align-items: center;
+    gap: clamp(2rem, 3.5vw, 3.5rem);
+    /* Clear of the side labels at the screen edges. */
+    padding: 0 clamp(7rem, 12vw, 12rem);
+    width: max-content;
+    will-change: transform;
+  }
+
+  .ugc-intro {
+    flex: 0 0 clamp(20rem, 30vw, 30rem);
+  }
+
+  .ugc-card--video .ugc-media {
+    width: auto;
+    height: min(62svh, 36rem);
+  }
+
+  .ugc-card--image .ugc-media {
+    width: auto;
+    height: min(62svh, 36rem);
+  }
+
+  .ugc-meter {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: var(--nav-width);
+    margin-inline: auto;
+    font-family: var(--font-switzer-stack);
+    font-weight: 600;
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.2em;
+    color: rgb(16 16 18 / 0.6);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ugc-progress {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .ugc-progress-fill {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+}
+
+/* /innovation: Why it needed to exist (WhyItExists.tsx), on the FAQ rules. */
+.why-inner {
+  width: calc(100% - 2 * var(--container-pad, 1.5rem));
+  max-width: 1200px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+.why-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.why-eyebrow {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(16 16 18 / 0.6);
+}
+
+.why-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-display);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(2.4rem, 5vw, 4.75rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.why-title-italic {
+  font-style: italic;
+}
+
+.why-lede {
+  margin: 0;
+  max-width: 26rem;
+}
+
+.why .inv-faq-list {
+  margin-top: 0;
+  max-width: none;
+}
+
+.why .inv-faq-item summary {
+  align-items: baseline;
+  gap: 1.25rem;
+}
+
+.why-no {
+  flex: none;
+  font-family: var(--font-switzer-stack);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: rgb(16 16 18 / 0.5);
+}
+
+.why-q {
+  flex: 1;
+}
+
+.why .inv-faq-item p {
+  padding-left: 2.6rem;
+}
+
+@media (min-width: 1024px) {
+  .why-inner {
+    grid-template-columns: 0.8fr 1.2fr;
+    align-items: start;
+  }
+
+  .why-head {
+    position: sticky;
+    top: 7rem;
+  }
+}
+
+/* --- /about: a note from the founder (FounderNote.tsx) --------------------- */
+.fn {
+  position: relative;
+  background: var(--ash);
+  color: #efeeeb;
+  overflow: hidden;
+}
+
+.fn-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding: var(--section-y) var(--gutter, 1.5rem);
+}
+
+/* A warm light behind the letter, picked up from the photograph. */
+.fn-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 70% at 30% 45%, rgb(150 96 40 / 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.fn-portrait {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  background: #000;
+}
+
+.fn-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Anchored to the top: the head always stays in frame, whatever the
+     frame's shape; the crop takes from the foot of the photograph. */
+  object-position: 50% 4%;
+  transform-origin: 50% 0%;
+  will-change: transform;
+}
+
+.fn-letter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.25rem);
+}
+
+.fn-eyebrow {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(239 238 235 / 0.6);
+}
+
+.fn-opening {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" var(--opsz-on-ash, 6);
+  font-weight: var(--bodoni-wght);
+  font-size: clamp(2.6rem, 6vw, 6.5rem);
+  line-height: 0.98;
+  text-transform: uppercase;
+  color: #efeeeb;
+}
+
+.fn-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 36rem;
+}
+
+.fn-para,
+.fn-closing {
+  margin: 0;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-weight: 500;
+  font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+  line-height: 1.35;
+  color: #efeeeb;
+}
+
+.fn-closing {
+  font-style: italic;
+}
+
+.fn-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.fn-name {
+  margin: 0;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  font-family: var(--font-bodoni-stack);
+  font-variation-settings: "opsz" 11;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.75rem, 2.8vw, 2.75rem);
+  color: #efeeeb;
+}
+
+.fn-name-inner {
+  display: block;
+}
+
+.fn-rule {
+  display: block;
+  width: 7rem;
+  height: 1px;
+  background: #efeeeb;
+  transform-origin: left center;
+}
+
+.fn-role {
+  margin: 0;
+  font-family: var(--font-switzer-stack);
+  font-weight: 500;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(239 238 235 / 0.6);
+}
+
+@media (min-width: 1024px) {
+  .fn-stage {
+    height: 100vh;
+    height: 100svh;
+    box-sizing: border-box;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    column-gap: clamp(3rem, 6vw, 7rem);
+    padding: clamp(4.5rem, 9vh, 6rem) clamp(4rem, 9vw, 10rem) clamp(2.5rem, 5vh, 3.5rem);
+  }
+
+  .fn-portrait {
+    aspect-ratio: auto;
+    height: 100%;
+    order: 2;
+  }
+
+  .fn-letter {
+    order: 1;
+  }
+
+  .fn-glow {
+    background: radial-gradient(60% 70% at 72% 45%, rgb(150 96 40 / 0.22), transparent 70%);
+  }
+
+  .fn-letter {
+    gap: clamp(1rem, 2.4vh, 1.75rem);
+  }
+
+  /* Sized by the screen's height as well as its width, so the whole
+     letter and the signature always fit the pinned screen. */
+  .fn-opening {
+    font-size: clamp(2.4rem, min(5.2vw, 8.2vh), 6rem);
+  }
+
+  .fn-para,
+  .fn-closing {
+    font-size: clamp(1rem, min(1.5vw, 2.45vh), 1.6rem);
+  }
+
+  .fn-body {
+    gap: min(1.1rem, 1.6vh);
+  }
+
+  .fn-name {
+    font-size: clamp(1.5rem, min(2.6vw, 4.2vh), 2.75rem);
+  }
+}
+
+/* /about photographs (AboutHouse.tsx) ---------------------------------------- */
+.ah-phil-media {
+  margin: clamp(2.5rem, 6vw, 5rem) 0 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.ah-phil-media img,
+.ah-approach-shot img,
+.ah-part-bg img,
+.ah-disc-thumb img,
+.ah-disc-shot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ah-phil-media img {
+  will-change: transform;
+}
+
+/* Disciplines: a round thumbnail per row on phones; a cursor preview on
+   wide screens with a fine pointer. */
+.ah-disc-list {
+  position: relative;
+}
+
+.ah-disc-thumb {
+  grid-column: 2;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.ah-disc-preview-host {
+  list-style: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.ah-disc-preview {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .ah-disc-thumb {
+    display: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .ah-disc-preview {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: clamp(14rem, 20vw, 20rem);
+    aspect-ratio: 4 / 5;
+    border-radius: 999px 999px 0 0;
+    overflow: hidden;
+    background: var(--ash);
+    box-shadow: 0 30px 60px -25px rgb(8 7 10 / 0.5);
+    visibility: hidden;
+  }
+
+  .ah-disc-shot {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+}
+
+/* Approach: three photographs at different heights. */
+.ah-approach-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  align-items: start;
+  gap: clamp(0.75rem, 2vw, 2rem);
+  margin-top: clamp(3rem, 7vw, 6rem);
+}
+
+.ah-approach-shot {
+  margin: 0;
+  overflow: hidden;
+  background: var(--ash);
+}
+
+.ah-approach-shot--0 {
+  aspect-ratio: 4 / 5;
+  margin-top: 18%;
+}
+
+.ah-approach-shot--1 {
+  aspect-ratio: 3 / 4;
+}
+
+.ah-approach-shot--2 {
+  aspect-ratio: 3 / 4;
+  margin-top: 30%;
+}
+
+/* Partnership: a faint photograph behind the close. */
+.ah-part {
+  position: relative;
+  overflow: hidden;
+}
+
+.ah-part-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+}
+
+.ah-part-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgb(8 7 10 / 0.2), rgb(8 7 10 / 0.9));
+}
+
+.ah-part > :not(.ah-part-bg) {
+  position: relative;
+}
